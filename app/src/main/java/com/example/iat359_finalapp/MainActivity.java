@@ -7,10 +7,15 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
 
     Button startButton, historyButton, settingsButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,13 +34,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         settingsButton = (Button)findViewById(R.id.settings_button);
         settingsButton.setOnClickListener(this);
 
+
+
+
     }
 
     @Override
     public void onClick(View v) {
         //if start button is pressed
         if(v.getId() == R.id.start_button){
-            Intent i = new Intent(MainActivity.this, SetupActivity.class);
+            Intent i = new Intent(MainActivity.this, MapsActivity.class);
             startActivity(i);
         }
         if(v.getId() == R.id.history_button){
