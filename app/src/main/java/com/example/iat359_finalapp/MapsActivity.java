@@ -19,6 +19,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -31,6 +32,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.w3c.dom.Text;
+
 import java.security.acl.Permission;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, TaskLoadedCallback, GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener {
@@ -41,12 +44,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Button getDirButton;
     LocationManager locationManager;
 
+    private TextView displayDistance;
+
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        displayDistance = (TextView) findViewById(R.id.displayDistance);
         //button
         getDirButton = (Button)findViewById(R.id.getDirection_button);
         getDirButton.setOnClickListener(new View.OnClickListener() {
@@ -70,6 +77,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //getting current location
         locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+
         //check if gps is enabled
         gpsStatus();
         
@@ -86,6 +94,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             if(gMap!=null){
                 gMap.setMyLocationEnabled(true);
+
             }
         }
         else{
@@ -127,6 +136,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         }
     };
+
+    public void detectDist(double currLat, double currLong, double destLat, double destLong) {
+        final int R = 6371; // Radius of the earth
+
+        double latDistance = Math.toRadians(destLat - currLat);
+        double lonDistance = Math.toRadians(destLong - currLong);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(currLat)) * Math.cos(Math.toRadians(destLat))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distance = R * c * 1000; // convert to meters
+
+//        return distance;
+        displayDistance.setText("" + distance);
+
+
+    }
 
 
     @Override
