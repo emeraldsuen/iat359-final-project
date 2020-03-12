@@ -5,6 +5,13 @@
     android:orientation="vertical">
 
     <fragment
+        android:id="@+id/autocomplete_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+        />
+
+    <fragment
         android:id="@+id/mapFragment"
         class="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
@@ -15,7 +22,7 @@
         android:id="@+id/getDirection_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Get Direction"></Button>
+        android:text="Get Direction"/>
 
 
 </LinearLayout>

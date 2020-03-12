@@ -18,9 +18,11 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -30,16 +32,25 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
 import java.security.acl.Permission;
+import java.util.Arrays;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, TaskLoadedCallback, GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, TaskLoadedCallback,
+        GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, PlaceSelectionListener{
 
     private GoogleMap gMap;
     private MarkerOptions i_place, f_place, curr_place;
+    private double p_latitude, p_longitude;
     private Polyline currentPolyline;
     Button getDirButton;
     LocationManager locationManager;
+    AutocompleteSupportFragment autocompleteSupportFragment;
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
@@ -72,7 +83,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         //check if gps is enabled
         gpsStatus();
-        
+
         //ask permission
 //        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
 //            ActivityCompat.requestPermissions(
@@ -94,56 +105,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
 
+
+        //Search Location
+        autocompleteSupportFragment = (AutocompleteSupportFragment)
+                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+        autocompleteSupportFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
+        autocompleteSupportFragment.setOnPlaceSelectedListener(this);
+
+        String apiKey = getString(R.string.api_key);
+        if(!Places.isInitialized()){
+            Places.initialize(getApplicationContext(),apiKey);
+        }
+        PlacesClient placesClient = Places.createClient(this);
     }
-
-
-    //not sure if this is working but this is from another gps tutorial
-    //it's where it constantly check location changing
-    LocationListener locationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(Location location) {
-            Toast.makeText(getBaseContext(), "Location changed : Lat: " + location.getLatitude() + " Lng: " + location.getLongitude(), Toast.LENGTH_SHORT).show();
-            String latitude = "Latitude: " + location.getLatitude();
-            String longitude = "Longitude: " + location.getLongitude();
-            double lat = location.getLatitude();
-            double longt = location.getLongitude();
-            Log.d("myLog", String.valueOf(lat));
-            Log.d("myLog", String.valueOf(longt));
-            curr_place = new MarkerOptions().position(new LatLng(lat,longt)).title("Current Location");
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-    };
-
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         gMap = googleMap;
-
         //google told me to do this
         gMap.setMyLocationEnabled(true);
         gMap.setOnMyLocationButtonClickListener(this);
         gMap.setOnMyLocationClickListener(this);
 
-
         Log.d("myLog", "Added Markers");
-
         //add vancouver location
-        gMap.addMarker(i_place);
-//        gMap.addMarker(curr_place);
+
     }
 
     private String getUrl(LatLng origin, LatLng dest, String directionMode) {
@@ -202,6 +188,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMyLocationClick(@NonNull Location location) {
         Toast.makeText(this,"Current Location:\n" + location, Toast.LENGTH_LONG).show();
+
+    }
+
+    @Override
+    public void onPlaceSelected(@NonNull Place place) {
+//        Toast.makeText(this,"Place chosen: " + place.getLatLng().longitude, Toast.LENGTH_SHORT).show();
+        p_latitude = place.getLatLng().latitude;
+        p_longitude = place.getLatLng().longitude;
+        i_place = new MarkerOptions().position(new LatLng(p_latitude, p_longitude)).title("Location 1");
+        gMap.addMarker(i_place);
+    }
+
+    @Override
+    public void onError(@NonNull Status status) {
 
     }
 }
