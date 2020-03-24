@@ -13,13 +13,12 @@ public class MyDatabase {
     private Context context;
     private final MyHelper helper;
 
-    public MyDatabase (Context c){
+    public MyDatabase(Context c) {
         context = c;
         helper = new MyHelper(context);
     }
 
-    public long insertData (String name, String type, String distance)
-    {
+    public long insertData(String name, String type, String distance) {
         db = helper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(Constants.NAME, name);
@@ -39,13 +38,12 @@ public class MyDatabase {
     }
 
 
-    public String getSelectedData(String type)
-    {
+    public String getSelectedData(String type) {
         //select plants from database of type 'herb'
         SQLiteDatabase db = helper.getWritableDatabase();
         String[] columns = {Constants.NAME, Constants.TYPE};
 
-        String selection = Constants.TYPE + "='" +type+ "'";  //Constants.TYPE = 'type'
+        String selection = Constants.TYPE + "='" + type + "'";  //Constants.TYPE = 'type'
         Cursor cursor = db.query(Constants.TABLE_NAME, columns, selection, null, null, null, null);
 
         StringBuffer buffer = new StringBuffer();
@@ -57,12 +55,12 @@ public class MyDatabase {
             String routeName = cursor.getString(index1);
             String routeType = cursor.getString(index2);
             String routeDist = cursor.getString(index3);
-            buffer.append(routeName + " " + routeType + " " +routeDist + "\n");
+            buffer.append(routeName + " " + routeType + " " + routeDist + "\n");
         }
         return buffer.toString();
     }
 
-    public int deleteRow(){
+    public int deleteRow() {
         SQLiteDatabase db = helper.getWritableDatabase();
         String[] whereArgs = {"route"};
         int count = db.delete(Constants.TABLE_NAME, Constants.TYPE + "=?", whereArgs);

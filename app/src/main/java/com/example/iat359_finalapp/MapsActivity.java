@@ -60,7 +60,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Marker myMarker;
     Location currLocation;
     double curr_lat, curr_long;
-//    double lat_dist, long_dist;
+    //    double lat_dist, long_dist;
     double distanceToDest;
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
@@ -70,7 +70,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         //button
-        getDirButton = (Button)findViewById(R.id.getDirection_button);
+        getDirButton = (Button) findViewById(R.id.getDirection_button);
         getDirButton.setOnClickListener(this);
 
         //setting up the places
@@ -78,27 +78,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         f_place = new MarkerOptions().position(new LatLng(49.248810, -122.980507)).title("Location 2");
 
 
-
-        SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.mapFragment);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
         mapFragment.getMapAsync(MapsActivity.this);
 
         String url = getUrl(i_place.getPosition(), f_place.getPosition(), "driving");
-        new FetchURL(MapsActivity.this).execute(url,"driving");
+        new FetchURL(MapsActivity.this).execute(url, "driving");
 
         //getting current location
-        locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         //check if gps is enabled
         gpsStatus();
 
         //You have to ask user for permission for location services
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            if(gMap!=null){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (gMap != null) {
                 gMap.setMyLocationEnabled(true);
 
 
             }
-        }
-        else{
+        } else {
             PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE, Manifest.permission.ACCESS_FINE_LOCATION, true);
         }
         //Search Location
@@ -108,8 +106,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         autocompleteSupportFragment.setOnPlaceSelectedListener(this);
 
         String apiKey = getString(R.string.api_key);
-        if(!Places.isInitialized()){
-            Places.initialize(getApplicationContext(),apiKey);
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), apiKey);
         }
         PlacesClient placesClient = Places.createClient(this);
     }
@@ -121,10 +119,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         gMap.setMyLocationEnabled(true);
         gMap.setOnMyLocationButtonClickListener(this);
         gMap.setOnMyLocationClickListener(this);
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             currLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             curr_lat = currLocation.getLatitude();
-            curr_long=currLocation.getLongitude();
+            curr_long = currLocation.getLongitude();
         }
 
 
@@ -153,21 +151,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        currentPolyline = gMap.addPolyline((PolylineOptions) values[0]);
     }
 
-    public void gpsStatus(){
+    public void gpsStatus() {
         //check if gps is enabled
-        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("GPS is disabled. Enable it now?")
                     .setCancelable(false)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
-                        public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused")final int id) {
+                        public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                             startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                         }
                     })
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
                         @Override
-                        public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused")final int id) {
+                        public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                             dialog.cancel();
                         }
                     });
@@ -184,7 +182,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMyLocationClick(@NonNull Location location) {
-        Toast.makeText(this,"Current Location:\n" + location, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Current Location:\n" + location, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -194,12 +192,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         p_latitude = place.getLatLng().latitude;
         p_longitude = place.getLatLng().longitude;
         i_place = new MarkerOptions().position(new LatLng(p_latitude, p_longitude)).title(destination.getName());
-        if(myMarker == null){
+        if (myMarker == null) {
             myMarker = gMap.addMarker(i_place);
-        }
-        else if(myMarker != null){
+        } else if (myMarker != null) {
             myMarker.remove();
-            myMarker= gMap.addMarker(i_place);
+            myMarker = gMap.addMarker(i_place);
         }
         gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(p_latitude, p_longitude), 12.0f));
     }
@@ -233,21 +230,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onClick(View v) {
-        if(v.getId() == R.id.getDirection_button){
+        if (v.getId() == R.id.getDirection_button) {
             //send info to setup page
             Intent i = new Intent(MapsActivity.this, SetupActivity.class);
 
             //if destination has been selected
-            if(destination!=null) {
+            if (destination != null) {
 
                 //calculation
-                distanceToDest = CalculationByDistance(curr_lat, curr_long, p_latitude,p_longitude);
+                distanceToDest = CalculationByDistance(curr_lat, curr_long, p_latitude, p_longitude);
 
                 i.putExtra("DESTINATION_STRING", destination.getName());
                 i.putExtra("DESTINATION_DISTANCE", distanceToDest);
                 startActivity(i);
-            }
-            else{
+            } else {
                 Toast.makeText(this, "Please select a destination" + curr_lat + " " + curr_long, Toast.LENGTH_SHORT).show();
             }
 
