@@ -1,6 +1,5 @@
 package com.example.iat359_finalapp;
 
-
 /**
  * Created by helmine on 2017-02-08.
  */
@@ -10,8 +9,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.widget.Toast;
-
-//import com.google.android.gms.common.internal.Constants;
 
 /**
  * Created by helmine on 2015-02-02.
@@ -26,8 +23,7 @@ public class  MyHelper extends SQLiteOpenHelper {
                     Constants.RID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     Constants.NAME + " TEXT, " +
                     Constants.TYPE + " TEXT, " +
-                    Constants.START_LOCATION + " TEXT, " +
-                    Constants.END_LOCATION + " TEXT);" ;
+                    Constants.DISTANCE + " TEXT);" ;
 
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS " + Constants.TABLE_NAME;
 

@@ -201,34 +201,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             myMarker.remove();
             myMarker= gMap.addMarker(i_place);
         }
-
-
-
-
         gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(p_latitude, p_longitude), 12.0f));
-
-
-
-
     }
 
     @Override
     public void onError(@NonNull Status status) {
 
-    }
-
-    private double distanceCalculator (double lat1, double long1, double lat2, double long2){
-        double theta = long1 - long2;
-        double dist = Math.sin(deg2rad(lat1))
-                        * Math.sin(deg2rad(lat2))
-                        + Math.cos(deg2rad(lat1))
-                        * Math.cos(deg2rad(lat2))
-                        * Math.cos(deg2rad(theta));
-        dist = Math.acos(dist);
-        dist = rad2deg(dist);
-        dist = dist * 60 * 1.1515;
-
-        return(dist);
     }
 
     public double CalculationByDistance(double lat1, double long1, double lat2, double long2) {
@@ -252,16 +230,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         return Radius * c;
     }
-
-    private double deg2rad(double deg){
-        return(deg*Math.PI/180.0);
-    }
-
-    private double rad2deg (double rad){
-        return(rad*180.0/Math.PI);
-    }
-
-
 
     @Override
     public void onClick(View v) {

@@ -6,8 +6,7 @@ public class Constants {
     public static final String RID = "_id";
     public static final String NAME = "Name";
     public static final String TYPE = "Type";
-    public static final String START_LOCATION = "startLocation";
-    public static final String END_LOCATION = "endLocation";
+    public static final String DISTANCE = "Distance";
     public static final int DATABASE_VERSION = 2;
 
 }
