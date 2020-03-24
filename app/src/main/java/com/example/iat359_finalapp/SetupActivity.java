@@ -17,14 +17,18 @@ import android.widget.Toast;
 
 import com.google.android.gms.location.places.Place;
 
+import org.w3c.dom.Text;
+
 import java.io.File;
 
 public class SetupActivity extends AppCompatActivity implements View.OnClickListener {
 
     TextView destinationNameTextView;
     TextView distFromDestTextView;
+    TextView toneName;
     SeekBar distSeekBar;
     RadioButton vibrate, alarm, headphones;
+    Button toneButton;
     Place destination;
 
     Button startButton;
@@ -58,6 +62,10 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
         alarm = (RadioButton) findViewById(R.id.alarm_Radio);
         headphones = (RadioButton) findViewById(R.id.headphones_Radio);
 
+        toneName = (TextView) findViewById(R.id.audio_name);
+
+        toneButton = (Button) findViewById(R.id.ringtone_button);
+        toneButton.setOnClickListener(this);
         //database
         db = new MyDatabase(this);
 
@@ -90,6 +98,10 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
             Uri i = data.getData();  // getData
             String s = i.getPath(); // getPath
             File k = new File(s);  // set File from path
+
+            toneName.setText(s);
+
+
             if (s != null) {      // file.exists
 
                 ContentValues values = new ContentValues();
@@ -101,7 +113,7 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
                 values.put(MediaStore.Audio.Media.IS_RINGTONE, true);
                 values.put(MediaStore.Audio.Media.IS_NOTIFICATION, true);
                 values.put(MediaStore.Audio.Media.IS_ALARM, true);
-                values.put(MediaStore.Audio.Media.IS_MUSIC, false);
+                values.put(MediaStore.Audio.Media.IS_MUSIC, true);
 
                 Uri uri = MediaStore.Audio.Media.getContentUriForPath(k
                         .getAbsolutePath());
@@ -151,11 +163,11 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
             startActivity(i);
         } else if (v.getId() == R.id.ringtone_button) {
             Toast.makeText(this, "ringtone", Toast.LENGTH_SHORT).show();
-//            Intent intent1 = new Intent();
-//            intent1.setAction(Intent.ACTION_GET_CONTENT);
-//            intent1.setType("audio/*");
-//            startActivityForResult(
-//                    Intent.createChooser(intent1, "Choose Sound File"), 6);
+            Intent intent1 = new Intent();
+            intent1.setAction(Intent.ACTION_GET_CONTENT);
+            intent1.setType("audio/*");
+            startActivityForResult(
+                    Intent.createChooser(intent1, "Choose Sound File"), 6);
         }
     }
 }
