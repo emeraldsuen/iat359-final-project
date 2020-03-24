@@ -29,9 +29,12 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -39,18 +42,26 @@ import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
 import java.security.acl.Permission;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, TaskLoadedCallback,
-        GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, PlaceSelectionListener{
+        GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, PlaceSelectionListener, View.OnClickListener {
 
     private GoogleMap gMap;
-    private MarkerOptions i_place, f_place, curr_place;
+    private MarkerOptions i_place, f_place;
     private double p_latitude, p_longitude;
     private Polyline currentPolyline;
     Button getDirButton;
     LocationManager locationManager;
     AutocompleteSupportFragment autocompleteSupportFragment;
+
+    private Place destination;
+    Marker myMarker;
+    Location currLocation;
+    double curr_lat, curr_long;
+//    double lat_dist, long_dist;
+    double distanceToDest;
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
@@ -60,12 +71,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         //button
         getDirButton = (Button)findViewById(R.id.getDirection_button);
-        getDirButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //get route
-            }
-        });
+        getDirButton.setOnClickListener(this);
 
         //setting up the places
         i_place = new MarkerOptions().position(new LatLng(49.282730, -123.120735)).title("Location 1");
@@ -84,28 +90,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //check if gps is enabled
         gpsStatus();
 
-        //ask permission
-//        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-//            ActivityCompat.requestPermissions(
-//                    this,
-//                    new String[] {Manifest.permission.ACCESS_COARSE_LOCATION},
-//                    MY_PERMISSIONS_ACCESS_COURSE_LOCATION
-//            );
-//        }
-
         //You have to ask user for permission for location services
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             if(gMap!=null){
                 gMap.setMyLocationEnabled(true);
+
+
             }
         }
         else{
             PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE, Manifest.permission.ACCESS_FINE_LOCATION, true);
         }
-
-
-
-
         //Search Location
         autocompleteSupportFragment = (AutocompleteSupportFragment)
                 getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
@@ -126,9 +121,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         gMap.setMyLocationEnabled(true);
         gMap.setOnMyLocationButtonClickListener(this);
         gMap.setOnMyLocationClickListener(this);
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            currLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            curr_lat = currLocation.getLatitude();
+            curr_long=currLocation.getLongitude();
+        }
 
-        Log.d("myLog", "Added Markers");
-        //add vancouver location
 
     }
 
@@ -147,7 +145,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters + "&key=" + getString(R.string.google_maps_key);
         return url;
     }
-
 
     @Override
     public void onTaskDone(Object... values) {
@@ -188,20 +185,104 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMyLocationClick(@NonNull Location location) {
         Toast.makeText(this,"Current Location:\n" + location, Toast.LENGTH_LONG).show();
-
     }
 
     @Override
     public void onPlaceSelected(@NonNull Place place) {
 //        Toast.makeText(this,"Place chosen: " + place.getLatLng().longitude, Toast.LENGTH_SHORT).show();
+        destination = place;
         p_latitude = place.getLatLng().latitude;
         p_longitude = place.getLatLng().longitude;
-        i_place = new MarkerOptions().position(new LatLng(p_latitude, p_longitude)).title("Location 1");
-        gMap.addMarker(i_place);
+        i_place = new MarkerOptions().position(new LatLng(p_latitude, p_longitude)).title(destination.getName());
+        if(myMarker == null){
+            myMarker = gMap.addMarker(i_place);
+        }
+        else if(myMarker != null){
+            myMarker.remove();
+            myMarker= gMap.addMarker(i_place);
+        }
+
+
+
+
+        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(p_latitude, p_longitude), 12.0f));
+
+
+
+
     }
 
     @Override
     public void onError(@NonNull Status status) {
 
+    }
+
+    private double distanceCalculator (double lat1, double long1, double lat2, double long2){
+        double theta = long1 - long2;
+        double dist = Math.sin(deg2rad(lat1))
+                        * Math.sin(deg2rad(lat2))
+                        + Math.cos(deg2rad(lat1))
+                        * Math.cos(deg2rad(lat2))
+                        * Math.cos(deg2rad(theta));
+        dist = Math.acos(dist);
+        dist = rad2deg(dist);
+        dist = dist * 60 * 1.1515;
+
+        return(dist);
+    }
+
+    public double CalculationByDistance(double lat1, double long1, double lat2, double long2) {
+        int Radius = 6371;// radius of earth in Km
+
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(long2 - long1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1))
+                * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
+                * Math.sin(dLon / 2);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        double valueResult = Radius * c;
+        double km = valueResult / 1;
+        DecimalFormat newFormat = new DecimalFormat("####");
+        int kmInDec = Integer.valueOf(newFormat.format(km));
+        double meter = valueResult % 1000;
+        int meterInDec = Integer.valueOf(newFormat.format(meter));
+        Log.i("Radius Value", "" + valueResult + "   KM  " + kmInDec
+                + " Meter   " + meterInDec);
+
+        return Radius * c;
+    }
+
+    private double deg2rad(double deg){
+        return(deg*Math.PI/180.0);
+    }
+
+    private double rad2deg (double rad){
+        return(rad*180.0/Math.PI);
+    }
+
+
+
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.getDirection_button){
+            //send info to setup page
+            Intent i = new Intent(MapsActivity.this, SetupActivity.class);
+
+            //if destination has been selected
+            if(destination!=null) {
+
+                //calculation
+                distanceToDest = CalculationByDistance(curr_lat, curr_long, p_latitude,p_longitude);
+
+                i.putExtra("DESTINATION_STRING", destination.getName());
+                i.putExtra("DESTINATION_DISTANCE", distanceToDest);
+                startActivity(i);
+            }
+            else{
+                Toast.makeText(this, "Please select a destination" + curr_lat + " " + curr_long, Toast.LENGTH_SHORT).show();
+            }
+
+        }
     }
 }
