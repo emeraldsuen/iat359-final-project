@@ -5,13 +5,13 @@
     android:id="@+id/listLayout">
 
     <TextView
+        android:id="@+id/routeNameEntry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Text"
-        android:id="@+id/routeNameEntry"
         android:layout_weight="1"
         android:gravity="left"
-        android:textSize="24sp" />
+        android:text="New Text"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/routeTypeEntry"
@@ -21,18 +21,17 @@
         android:text="TextView" />
 
     <TextView
+        android:id="@+id/routeDistEntry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Text"
-        android:id="@+id/routeDistEntry"
         android:layout_weight="1"
-        android:gravity="right" />
+        android:text="New Text" />
 
     <TextView
-        android:id="@+id/routeDistEntry2"
+        android:id="@+id/routeRingtoneEntry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:gravity="right" />
+        android:text="TextView" />
 
 </LinearLayout>

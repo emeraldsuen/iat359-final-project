@@ -7,6 +7,7 @@ public class Constants {
     public static final String NAME = "Name";
     public static final String TYPE = "Type";
     public static final String DISTANCE = "Distance";
-    public static final int DATABASE_VERSION = 2;
+    public static final String RINGTONE = "Ringtone";
+    public static final int DATABASE_VERSION = 3;
 
 }

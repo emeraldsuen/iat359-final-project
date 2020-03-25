@@ -38,6 +38,7 @@ public class HistoryActivity extends AppCompatActivity implements AdapterView.On
         int index1 = cursor.getColumnIndex(Constants.NAME);
         int index2 = cursor.getColumnIndex(Constants.TYPE);
         int index3 = cursor.getColumnIndex(Constants.DISTANCE);
+        int index4 = cursor.getColumnIndex(Constants.RINGTONE);
 
         ArrayList<String> mArrayList = new ArrayList<String>();
         cursor.moveToFirst();
@@ -45,7 +46,8 @@ public class HistoryActivity extends AppCompatActivity implements AdapterView.On
             String routeName = cursor.getString(index1);
             String routeType = cursor.getString(index2);
             String routeDist = cursor.getString(index3);
-            String s = routeName + "," + routeType + "," + routeDist;
+            String routeRingtone = cursor.getString(index4);
+            String s = routeName + "," + routeType + "," + routeDist + "," + routeRingtone;
             mArrayList.add(s);
             cursor.moveToNext();
         }
@@ -60,6 +62,8 @@ public class HistoryActivity extends AppCompatActivity implements AdapterView.On
         TextView routeNameTextView = (TextView) view.findViewById(R.id.routeNameEntry);
         TextView routeTypeTextView = (TextView) view.findViewById(R.id.routeTypeEntry);
         TextView routeDistTextView = (TextView) view.findViewById(R.id.routeDistEntry);
-        Toast.makeText(this, "row " + (1+position) + ":  " + routeNameTextView.getText() +" " + routeTypeTextView.getText() +" "+ routeDistTextView.getText(), Toast.LENGTH_LONG).show();
+        TextView routeRingtoneTextView = (TextView) view.findViewById(R.id.routeRingtoneEntry);
+
+        Toast.makeText(this, "row " + (1+position) + ":  " + routeNameTextView.getText() +" " + routeTypeTextView.getText() +" "+ routeDistTextView.getText()+" "+ routeRingtoneTextView.getText(), Toast.LENGTH_LONG).show();
     }
 }

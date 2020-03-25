@@ -18,12 +18,13 @@ public class MyDatabase {
         helper = new MyHelper(context);
     }
 
-    public long insertData(String name, String type, String distance) {
+    public long insertData(String name, String type, String distance, String ringtone) {
         db = helper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(Constants.NAME, name);
         contentValues.put(Constants.TYPE, type);
         contentValues.put(Constants.DISTANCE, distance);
+        contentValues.put(Constants.RINGTONE, ringtone);
         long id = db.insert(Constants.TABLE_NAME, null, contentValues);
         return id;
     }
@@ -32,7 +33,7 @@ public class MyDatabase {
     {
         SQLiteDatabase db = helper.getWritableDatabase();
 
-        String[] columns = {Constants.RID, Constants.NAME, Constants.TYPE, Constants.DISTANCE};
+        String[] columns = {Constants.RID, Constants.NAME, Constants.TYPE, Constants.DISTANCE, Constants.RINGTONE};
         Cursor cursor = db.query(Constants.TABLE_NAME, columns, null, null, null, null, null);
         return cursor;
     }
@@ -52,10 +53,12 @@ public class MyDatabase {
             int index1 = cursor.getColumnIndex(Constants.NAME);
             int index2 = cursor.getColumnIndex(Constants.TYPE);
             int index3 = cursor.getColumnIndex(Constants.DISTANCE);
+            int index4 = cursor.getColumnIndex(Constants.RINGTONE);
             String routeName = cursor.getString(index1);
             String routeType = cursor.getString(index2);
             String routeDist = cursor.getString(index3);
-            buffer.append(routeName + " " + routeType + " " + routeDist + "\n");
+            String routeRingtone = cursor.getString(index4);
+            buffer.append(routeName + " " + routeType + " " + routeDist + routeRingtone + "\n");
         }
         return buffer.toString();
     }

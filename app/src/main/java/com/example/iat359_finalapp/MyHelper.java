@@ -23,7 +23,8 @@ public class  MyHelper extends SQLiteOpenHelper {
                     Constants.RID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     Constants.NAME + " TEXT, " +
                     Constants.TYPE + " TEXT, " +
-                    Constants.DISTANCE + " TEXT);" ;
+                    Constants.DISTANCE + " TEXT, " +
+                    Constants.RINGTONE + " TEXT);" ;
 
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS " + Constants.TABLE_NAME;
 

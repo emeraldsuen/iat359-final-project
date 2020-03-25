@@ -3,11 +3,14 @@ package com.example.iat359_finalapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
@@ -23,6 +26,7 @@ import java.io.File;
 
 public class SetupActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private static final String TAG = "TEST";
     TextView destinationNameTextView;
     TextView distFromDestTextView;
     TextView toneName;
@@ -39,6 +43,9 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
     int dist_km;
 
     String outputType;
+    int progressChangedValue = 0;
+    String s;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,10 +60,13 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
 
         distFromDestTextView = (TextView) findViewById(R.id.distanceNum_TextView);
         dist_km = (int) i.getDoubleExtra("DESTINATION_DISTANCE", 0.0);
-        distFromDestTextView.setText("Distance: " + dist_km);
+//        distFromDestTextView.setText("Distance: " + dist_km);
+        distFromDestTextView.setText("");
+
 
         distSeekBar = (SeekBar) findViewById(R.id.distance_seek);
         distSeekBar.setMax(dist_km);
+        distSeekBar.setProgress(dist_km / 2);
 
         vibrate = (RadioButton) findViewById(R.id.vibrate_Radio);
         alarm = (RadioButton) findViewById(R.id.alarm_Radio);
@@ -75,7 +85,6 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
 
         //SeekBarListener
         distSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            int progressChangedValue = 0;
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 progressChangedValue = progress;
@@ -96,43 +105,55 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == 6) {
             Uri i = data.getData();  // getData
-            String s = i.getPath(); // getPath
+            s = i.getPath(); // getPath
             File k = new File(s);  // set File from path
 
             toneName.setText(s);
+            Log.i(TAG, s);
 
-
-            if (s != null) {      // file.exists
-
-                ContentValues values = new ContentValues();
-                values.put(MediaStore.MediaColumns.DATA, k.getAbsolutePath());
-                values.put(MediaStore.MediaColumns.TITLE, "ring");
-                values.put(MediaStore.MediaColumns.MIME_TYPE, "audio/mp3");
-                values.put(MediaStore.MediaColumns.SIZE, k.length());
-                values.put(MediaStore.Audio.Media.ARTIST, R.string.app_name);
-                values.put(MediaStore.Audio.Media.IS_RINGTONE, true);
-                values.put(MediaStore.Audio.Media.IS_NOTIFICATION, true);
-                values.put(MediaStore.Audio.Media.IS_ALARM, true);
-                values.put(MediaStore.Audio.Media.IS_MUSIC, true);
-
-                Uri uri = MediaStore.Audio.Media.getContentUriForPath(k
-                        .getAbsolutePath());
-                getContentResolver().delete(
-                        uri,
-                        MediaStore.MediaColumns.DATA + "=\""
-                                + k.getAbsolutePath() + "\"", null);
-                Uri newUri = getContentResolver().insert(uri, values);
-
-                try {
-                    RingtoneManager.setActualDefaultRingtoneUri(
-                            SetupActivity.this, RingtoneManager.TYPE_RINGTONE,
-                            newUri);
-                } catch (Throwable t) {
-
-                }
-            }
+//            if (s != null) {      // file.exists
+//
+//                ContentValues values = new ContentValues();
+//                values.put(MediaStore.MediaColumns.DATA, k.getAbsolutePath());
+//                values.put(MediaStore.MediaColumns.TITLE, "ring");
+//                values.put(MediaStore.MediaColumns.MIME_TYPE, "audio/mp3");
+//                values.put(MediaStore.MediaColumns.SIZE, k.length());
+//                values.put(MediaStore.Audio.Media.ARTIST, R.string.app_name);
+//                values.put(MediaStore.Audio.Media.IS_RINGTONE, true);
+//                values.put(MediaStore.Audio.Media.IS_NOTIFICATION, true);
+//                values.put(MediaStore.Audio.Media.IS_ALARM, true);
+//                values.put(MediaStore.Audio.Media.IS_MUSIC, true);
+//
+//
+//                Uri uri = MediaStore.Audio.Media.getContentUriForPath(k.getAbsolutePath());
+//                getContentResolver().delete(uri, MediaStore.MediaColumns.DATA + "=\"" + k.getAbsolutePath() + "\"", null);
+//                Uri newUri = getContentResolver().insert(uri, values);
+//
+//                try {
+//                    RingtoneManager.setActualDefaultRingtoneUri(
+//                            SetupActivity.this, RingtoneManager.TYPE_RINGTONE,
+//                            newUri);
+//                } catch (Throwable t) {
+//
+//                }
+//            }
         }
     }
+
+//    public String getRealPathFromURI(Context context, Uri contentUri) {
+//        Cursor cursor = null;
+//        try {
+//            String[] proj = {MediaStore.Images.Media.DATA};
+//            cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
+//            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+//            cursor.moveToFirst();
+//            return cursor.getString(column_index);
+//        } finally {
+//            if (cursor != null) {
+//                cursor.close();
+//            }
+//        }
+//    }
 
     @Override
     public void onClick(View v) {
@@ -147,12 +168,18 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
                 Toast.makeText(this, "Please select a output source.", Toast.LENGTH_SHORT).show();
             }
 
+            if (s == null) {
+                Toast.makeText(this, "Please select a ringtone.", Toast.LENGTH_SHORT).show();
+            }
+
             String name = dest_name;
             String type = "transit";
             dist_km = (int) dist_km;
-            String distance = String.valueOf(dist_km) + "km";
+//            String distance = String.valueOf(dist_km) + "km";
+            String distance = progressChangedValue + "km";
+            String ringtone = s;
 
-            long id = db.insertData(name, type, distance);
+            long id = db.insertData(name, type, distance, ringtone);
             if (id < 0) {
                 Toast.makeText(this, "fail", Toast.LENGTH_SHORT).show();
             } else {
