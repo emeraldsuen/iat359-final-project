@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,10 +31,11 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
     TextView destinationNameTextView;
     TextView distFromDestTextView;
     TextView toneName;
-    SeekBar distSeekBar;
-    RadioButton vibrate, alarm, headphones;
-    Button toneButton;
+    SeekBar distSeekBar, volSeekBar;
+    RadioButton alarm, headphones;
     Place destination;
+    Switch vibration;
+    Boolean vibrate;
 
     boolean inTransit = false;
 
@@ -46,6 +48,8 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
 
     String outputType;
     int progressChangedValue = 0;
+    int volChangedValue;
+
     String s;
 
     double dest_lat, dest_long;
@@ -75,14 +79,19 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
         distSeekBar.setMax(dist_km);
         distSeekBar.setProgress(dist_km / 2);
 
-        vibrate = (RadioButton) findViewById(R.id.vibrate_Radio);
+        volSeekBar = (SeekBar) findViewById(R.id.volSeekBar);
+        volSeekBar.setMax(100);
+        volSeekBar.setProgress(50);
+
+        vibration = (Switch) findViewById(R.id.vibrate);
+        vibration.setChecked(true);
+
         alarm = (RadioButton) findViewById(R.id.alarm_Radio);
         headphones = (RadioButton) findViewById(R.id.headphones_Radio);
 
         toneName = (TextView) findViewById(R.id.audio_name);
 
-        toneButton = (Button) findViewById(R.id.ringtone_button);
-        toneButton.setOnClickListener(this);
+
         //database
         db = new MyDatabase(this);
 
@@ -105,47 +114,61 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
             }
         });
 
+        volSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                volChangedValue = progress;
+            }
+
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                toneName.setText("" + volChangedValue);
+            }
+        });
+
 
     }
 
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == 6) {
-            Uri i = data.getData();  // getData
-            s = i.getPath(); // getPath
-            File k = new File(s);  // set File from path
-
-            toneName.setText(s);
-            Log.i(TAG, s);
-
-//            if (s != null) {      // file.exists
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (resultCode == RESULT_OK && requestCode == 6) {
+//            Uri i = data.getData();  // getData
+//            s = i.getPath(); // getPath
+//            File k = new File(s);  // set File from path
 //
-//                ContentValues values = new ContentValues();
-//                values.put(MediaStore.MediaColumns.DATA, k.getAbsolutePath());
-//                values.put(MediaStore.MediaColumns.TITLE, "ring");
-//                values.put(MediaStore.MediaColumns.MIME_TYPE, "audio/mp3");
-//                values.put(MediaStore.MediaColumns.SIZE, k.length());
-//                values.put(MediaStore.Audio.Media.ARTIST, R.string.app_name);
-//                values.put(MediaStore.Audio.Media.IS_RINGTONE, true);
-//                values.put(MediaStore.Audio.Media.IS_NOTIFICATION, true);
-//                values.put(MediaStore.Audio.Media.IS_ALARM, true);
-//                values.put(MediaStore.Audio.Media.IS_MUSIC, true);
+//            toneName.setText(s);
+//            Log.i(TAG, s);
 //
-//
-//                Uri uri = MediaStore.Audio.Media.getContentUriForPath(k.getAbsolutePath());
-//                getContentResolver().delete(uri, MediaStore.MediaColumns.DATA + "=\"" + k.getAbsolutePath() + "\"", null);
-//                Uri newUri = getContentResolver().insert(uri, values);
-//
-//                try {
-//                    RingtoneManager.setActualDefaultRingtoneUri(
-//                            SetupActivity.this, RingtoneManager.TYPE_RINGTONE,
-//                            newUri);
-//                } catch (Throwable t) {
-//
-//                }
-//            }
-        }
-    }
+////            if (s != null) {      // file.exists
+////
+////                ContentValues values = new ContentValues();
+////                values.put(MediaStore.MediaColumns.DATA, k.getAbsolutePath());
+////                values.put(MediaStore.MediaColumns.TITLE, "ring");
+////                values.put(MediaStore.MediaColumns.MIME_TYPE, "audio/mp3");
+////                values.put(MediaStore.MediaColumns.SIZE, k.length());
+////                values.put(MediaStore.Audio.Media.ARTIST, R.string.app_name);
+////                values.put(MediaStore.Audio.Media.IS_RINGTONE, true);
+////                values.put(MediaStore.Audio.Media.IS_NOTIFICATION, true);
+////                values.put(MediaStore.Audio.Media.IS_ALARM, true);
+////                values.put(MediaStore.Audio.Media.IS_MUSIC, true);
+////
+////
+////                Uri uri = MediaStore.Audio.Media.getContentUriForPath(k.getAbsolutePath());
+////                getContentResolver().delete(uri, MediaStore.MediaColumns.DATA + "=\"" + k.getAbsolutePath() + "\"", null);
+////                Uri newUri = getContentResolver().insert(uri, values);
+////
+////                try {
+////                    RingtoneManager.setActualDefaultRingtoneUri(
+////                            SetupActivity.this, RingtoneManager.TYPE_RINGTONE,
+////                            newUri);
+////                } catch (Throwable t) {
+////
+////                }
+////            }
+//        }
+//    }
 
 //    public String getRealPathFromURI(Context context, Uri contentUri) {
 //        Cursor cursor = null;
@@ -166,9 +189,13 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         //starting trip
         if (v.getId() == R.id.startTrip_Button) {
-            if (vibrate.isChecked()) {
-                outputType = "vibrate";
-            } else if (alarm.isChecked()) {
+            if (vibration.isChecked()) {
+                vibrate = true;
+            } else {
+                vibrate = false;
+            }
+
+            if (alarm.isChecked()) {
                 outputType = "alarm";
             } else if (headphones.isChecked()) {
                 outputType = "headphones";
@@ -176,9 +203,6 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
                 Toast.makeText(this, "Please select a output source.", Toast.LENGTH_SHORT).show();
             }
 
-            if (s == null) {
-                Toast.makeText(this, "Please select a ringtone.", Toast.LENGTH_SHORT).show();
-            }
 
             String name = dest_name;
             String type = "transit";
@@ -204,15 +228,20 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
             i.putExtra("Dest_long", dest_long);
             i.putExtra("Dest_name", name);
             i.putExtra("Dest_dist", dist_km);
+            i.putExtra("OUTPUT", outputType);
+            i.putExtra("VOL", volChangedValue);
+            i.putExtra("VIBRATE", vibrate);
+
 
             startActivity(i);
-        } else if (v.getId() == R.id.ringtone_button) {
-            Toast.makeText(this, "ringtone", Toast.LENGTH_SHORT).show();
-            Intent intent1 = new Intent();
-            intent1.setAction(Intent.ACTION_GET_CONTENT);
-            intent1.setType("audio/*");
-            startActivityForResult(
-                    Intent.createChooser(intent1, "Choose Sound File"), 6);
         }
+//        else if (v.getId() == R.id.ringtone_button) {
+//            Toast.makeText(this, "ringtone", Toast.LENGTH_SHORT).show();
+//            Intent intent1 = new Intent();
+//            intent1.setAction(Intent.ACTION_GET_CONTENT);
+//            intent1.setType("audio/*");
+//            startActivityForResult(
+//                    Intent.createChooser(intent1, "Choose Sound File"), 6);
+//        }
     }
 }

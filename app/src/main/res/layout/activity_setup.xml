@@ -73,37 +73,6 @@
                 android:layout_margin="25dp">
 
                 <TextView
-                    android:id="@+id/ringtone_TextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Ringtone" />
-
-                <TextView
-                    android:id="@+id/audio_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Tone name" />
-
-            </TableRow>
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <Button
-                    android:id="@+id/ringtone_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Select Ringtone" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="25dp">
-
-                <TextView
                     android:id="@+id/alarmOutput_TextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -115,11 +84,11 @@
                     android:layout_height="wrap_content">
 
                     <RadioButton
-                        android:id="@+id/vibrate_Radio"
+                        android:id="@+id/headphones_Radio"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Vibrate"
-                        android:checked="true"/>
+                        android:checked="true"
+                        android:text="Headphones" />
 
                     <RadioButton
                         android:id="@+id/alarm_Radio"
@@ -127,12 +96,53 @@
                         android:layout_height="wrap_content"
                         android:text="Alarm" />
 
-                    <RadioButton
-                        android:id="@+id/headphones_Radio"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Headphones" />
                 </RadioGroup>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="25dp">
+
+                <TextView
+                    android:id="@+id/ringtone_TextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Volume" />
+
+                <TextView
+                    android:id="@+id/audio_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="25dp">
+
+                <SeekBar
+                    android:id="@+id/volSeekBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <Switch
+                    android:id="@+id/vibrate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="25dp"
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:text="Vibrate" />
             </TableRow>
 
             <TableRow
@@ -149,6 +159,7 @@
                     android:gravity="center"
                     android:text="Start Trip" />
             </TableRow>
+
         </TableLayout>
 
     </LinearLayout>

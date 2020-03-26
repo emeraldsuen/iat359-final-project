@@ -14,7 +14,10 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -73,7 +76,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     Boolean inTransit = false;
+    String outputType;
     String p_name;
+    int vol;
+    boolean vibrateUser;
+
+    Vibrator v;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,24 +130,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // check if there are extras
         Bundle extras = i2.getExtras();
-        if(extras == null){
+        if (extras == null) {
 
-        }
-        else {
+        } else {
             inTransit = i2.getBooleanExtra("InTransit", true);
             p_latitude = i2.getDoubleExtra("Dest_lat", 0.0);
             p_longitude = i2.getDoubleExtra("Dest_long", 0.0);
             p_name = i2.getStringExtra("Dest_name");
             distanceBeforeAlarm = i2.getDoubleExtra("Dest_dist", 0.0);
+            outputType = i2.getStringExtra("OUTPUT");
+            vol = i2.getIntExtra("VOL", 0);
+            vibrateUser = i2.getBooleanExtra("VIBRATE", false);
 
         }
         //button
-        if(inTransit == false) {
+        if (inTransit == false) {
             getDirButton = (Button) findViewById(R.id.getDirection_button);
             getDirButton.setText("Get Direction");
             getDirButton.setOnClickListener(this);
             DistanceTo = (TextView) findViewById(R.id.alarmTextView);
-        }else if(inTransit == true){
+        } else if (inTransit == true) {
             getDirButton = (Button) findViewById(R.id.getDirection_button);
             getDirButton.setText("In Transit");
             getDirButton.setOnClickListener(this);
@@ -167,7 +177,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         gMap.setOnMyLocationButtonClickListener(this);
         gMap.setOnMyLocationClickListener(this);
 
-        if(inTransit == true){
+        if (inTransit == true) {
             i_place = new MarkerOptions().position(new LatLng(p_latitude, p_longitude)).title(p_name);
             myMarker = gMap.addMarker(i_place);
         }
@@ -228,7 +238,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onPlaceSelected(@NonNull Place place) {
-        if(inTransit==false) {
+        if (inTransit == false) {
             destination = place;
             p_latitude = place.getLatLng().latitude;
             p_longitude = place.getLatLng().longitude;
@@ -294,8 +304,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Toast.makeText(this, "Please select a destination" + curr_lat + " " + curr_long, Toast.LENGTH_SHORT).show();
             }
 
-        }
-        else if(v.getId() == R.id.getDirection_button && inTransit == true){
+        } else if (v.getId() == R.id.getDirection_button && inTransit == true) {
             Intent i3 = new Intent(MapsActivity.this, MainActivity.class);
             inTransit = false;
             startActivity(i3);
@@ -309,7 +318,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(Location location) {
-        if(inTransit == true) {
+        if (inTransit == true) {
             if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
                 return;
@@ -322,17 +331,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curr_lat, curr_long), 12.0f));
                 double ugh = CalculationByDistance(curr_lat, curr_long, p_latitude, p_longitude);
 //                DecimalFormat df = new DecimalFormat("#.##");
-                DistanceTo.setText(ugh+"");
+                DistanceTo.setText(ugh + "");
 //                DistanceTo.setText(df.format(ugh) + "km");
-                if(ugh<=distanceBeforeAlarm){
+                if (vibrateUser == true) {
+                    vibrate();
+                }
+                Log.i("TEST", outputType);
+                if (outputType.equals("alarm")) {
+//                    ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_ALARM, vol);
+//                    tg.startTone(ToneGenerator.TONE_PROP_BEEP, 1000);
+                    soundAlarm();
+                    Log.i("TEST", "alarm ringing");
+                } else if (outputType.equals("headphones")) {
+//                    ToneGenerator tg2 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+//                    tg2.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 200);
+                    soundMusic();
+                    Log.i("TEST", "music ringing");
+
+                }
+
+                if (ugh <= distanceBeforeAlarm) {
                     Intent i4 = new Intent(MapsActivity.this, MainActivity.class);
                     inTransit = false;
                     startActivity(i4);
                     Toast.makeText(this, "Transit is done", Toast.LENGTH_SHORT).show();
                 }
             }
-        }
-        else {      //not in transit
+        } else {      //not in transit
             if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
                 return;
@@ -359,5 +384,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onProviderDisabled(String provider) {
 
+    }
+
+    private void vibrate() {
+        // Get instance of Vibrator from current Context
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+        // Vibrate for 400 milliseconds
+        v.vibrate(400);
+
+
+    }
+
+    private void soundMusic() {
+        ToneGenerator tg1 = new ToneGenerator(AudioManager.STREAM_MUSIC, vol);
+        tg1.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 1000);
+    }
+
+    private void soundAlarm() {
+        ToneGenerator tg2 = new ToneGenerator(AudioManager.STREAM_ALARM, vol);
+        tg2.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 1000);
     }
 }
