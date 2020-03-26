@@ -198,6 +198,8 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
             i.putExtra("CURRLONG", currLong);
             i.putExtra("DESTLAT", destLat);
             i.putExtra("DESTLONG", destLong);
+            i.putExtra("USER_DISTANCE", progressChangedValue);
+            i.putExtra("FINAL_DIST", dist_km);
             startActivity(i);
         } else if (v.getId() == R.id.ringtone_button) {
             Toast.makeText(this, "ringtone", Toast.LENGTH_SHORT).show();
