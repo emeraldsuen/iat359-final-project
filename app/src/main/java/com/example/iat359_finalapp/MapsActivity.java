@@ -242,6 +242,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 i.putExtra("DESTINATION_STRING", destination.getName());
                 i.putExtra("DESTINATION_DISTANCE", distanceToDest);
+
+                i.putExtra("CURRLAT", curr_lat);
+                i.putExtra("CURRLONG", curr_long);
+                i.putExtra("DESTLAT", p_latitude);
+                i.putExtra("DESTLONG", p_longitude);
                 startActivity(i);
             } else {
                 Toast.makeText(this, "Please select a destination" + curr_lat + " " + curr_long, Toast.LENGTH_SHORT).show();

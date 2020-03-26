@@ -46,6 +46,8 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
     int progressChangedValue = 0;
     String s;
 
+    Double currLat, currLong, destLat, destLong;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +55,11 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_setup);
 
         Intent i = getIntent();
+
+        currLat = i.getDoubleExtra("CURRLAT", 0.0);
+        currLong = i.getDoubleExtra("CURRLONG", 0.0);
+        destLat = i.getDoubleExtra("DESTLAT", 0.0);
+        destLong = i.getDoubleExtra("DESTLONG", 0.0);
 
         destinationNameTextView = (TextView) findViewById(R.id.locationText);
         dest_name = i.getStringExtra("DESTINATION_STRING");
@@ -187,6 +194,10 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
             }
 
             Intent i = new Intent(SetupActivity.this, InTransit.class);
+            i.putExtra("CURRLAT", currLat);
+            i.putExtra("CURRLONG", currLong);
+            i.putExtra("DESTLAT", destLat);
+            i.putExtra("DESTLONG", destLong);
             startActivity(i);
         } else if (v.getId() == R.id.ringtone_button) {
             Toast.makeText(this, "ringtone", Toast.LENGTH_SHORT).show();

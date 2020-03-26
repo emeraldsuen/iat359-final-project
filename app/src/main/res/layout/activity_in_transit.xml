@@ -6,4 +6,46 @@
     android:layout_height="match_parent"
     tools:context=".InTransit">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/currLatTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="25dp"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/currLongTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="25dp"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/destLatTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="25dp"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/destLongTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="25dp"
+            android:text="TextView" />
+
+        <EditText
+            android:id="@+id/distFromDest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="25dp"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="Name" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
