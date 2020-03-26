@@ -331,26 +331,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curr_lat, curr_long), 12.0f));
                 double ugh = CalculationByDistance(curr_lat, curr_long, p_latitude, p_longitude);
 //                DecimalFormat df = new DecimalFormat("#.##");
-                DistanceTo.setText(ugh + "");
+                DistanceTo.setText(ugh + "  " +distanceBeforeAlarm);
 //                DistanceTo.setText(df.format(ugh) + "km");
-                if (vibrateUser == true) {
-                    vibrate();
-                }
-                Log.i("TEST", outputType);
-                if (outputType.equals("alarm")) {
-//                    ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_ALARM, vol);
-//                    tg.startTone(ToneGenerator.TONE_PROP_BEEP, 1000);
-                    soundAlarm();
-                    Log.i("TEST", "alarm ringing");
-                } else if (outputType.equals("headphones")) {
-//                    ToneGenerator tg2 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
-//                    tg2.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 200);
-                    soundMusic();
-                    Log.i("TEST", "music ringing");
-
-                }
+                //alarms were here
 
                 if (ugh <= distanceBeforeAlarm) {
+                    if (vibrateUser == true) {
+                        vibrate();
+                    }
+                    Log.i("TEST", outputType);
+                    if (outputType.equals("alarm")) {
+//                    ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_ALARM, vol);
+//                    tg.startTone(ToneGenerator.TONE_PROP_BEEP, 1000);
+                        soundAlarm();
+                        Log.i("TEST", "alarm ringing");
+                    } else if (outputType.equals("headphones")) {
+//                    ToneGenerator tg2 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+//                    tg2.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 200);
+                        soundMusic();
+                        Log.i("TEST", "music ringing");
+
+                    }
+
                     Intent i4 = new Intent(MapsActivity.this, MainActivity.class);
                     inTransit = false;
                     startActivity(i4);

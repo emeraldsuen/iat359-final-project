@@ -76,7 +76,8 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
 
 
         distSeekBar = (SeekBar) findViewById(R.id.distance_seek);
-        distSeekBar.setMax(dist_km);
+//        distSeekBar.setMax(dist_km);
+        distSeekBar.setMax(3);
         distSeekBar.setProgress(dist_km / 2);
 
         volSeekBar = (SeekBar) findViewById(R.id.volSeekBar);
@@ -206,7 +207,7 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
 
             String name = dest_name;
             String type = "transit";
-            dist_km = (int) dist_km;
+//            dist_km = (int) dist_km;
 //            String distance = String.valueOf(dist_km) + "km";
             String distance = progressChangedValue + "km";
             String ringtone = s;
@@ -218,7 +219,7 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
                 Toast.makeText(this, "success", Toast.LENGTH_SHORT).show();
             }
 
-
+            double sigh = distSeekBar.getProgress();
             inTransit = true;
 
             Intent i = new Intent(SetupActivity.this, MapsActivity.class);
@@ -227,7 +228,7 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
             i.putExtra("Dest_lat", dest_lat);
             i.putExtra("Dest_long", dest_long);
             i.putExtra("Dest_name", name);
-            i.putExtra("Dest_dist", dist_km);
+            i.putExtra("Dest_dist", sigh);
             i.putExtra("OUTPUT", outputType);
             i.putExtra("VOL", volChangedValue);
             i.putExtra("VIBRATE", vibrate);
