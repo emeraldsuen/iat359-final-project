@@ -11,6 +11,12 @@
         android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
         />
 
+    <TextView
+        android:id="@+id/alarmTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView" />
+
     <fragment
         android:id="@+id/mapFragment"
         class="com.google.android.gms.maps.SupportMapFragment"

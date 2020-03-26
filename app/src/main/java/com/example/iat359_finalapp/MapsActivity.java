@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
@@ -41,18 +42,23 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
+import org.w3c.dom.Text;
+
 import java.security.acl.Permission;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 
+import static java.lang.String.valueOf;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, TaskLoadedCallback,
-        GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, PlaceSelectionListener, View.OnClickListener {
+        GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, PlaceSelectionListener, View.OnClickListener{
 
     private GoogleMap gMap;
     private MarkerOptions i_place, f_place;
     private double p_latitude, p_longitude;
     private Polyline currentPolyline;
     Button getDirButton;
+    TextView DistanceTo;
     LocationManager locationManager;
     AutocompleteSupportFragment autocompleteSupportFragment;
 
@@ -92,6 +98,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //check if gps is enabled
         gpsStatus();
 
+
         //You have to ask user for permission for location services
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             if (gMap != null) {
@@ -127,6 +134,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             getDirButton = (Button) findViewById(R.id.getDirection_button);
             getDirButton.setText("In Transit");
             getDirButton.setOnClickListener(this);
+            DistanceTo = (TextView) findViewById(R.id.alarmTextView);
         }
 
         //Search Location
@@ -149,22 +157,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         gMap.setMyLocationEnabled(true);
         gMap.setOnMyLocationButtonClickListener(this);
         gMap.setOnMyLocationClickListener(this);
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+//        }
+
+        if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            return;
+        }else{
+            // Write you code here if permission already given.
             currLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             curr_lat = currLocation.getLatitude();
             curr_long = currLocation.getLongitude();
         }
 
-        if(inTransit == true){
-            i_place = new MarkerOptions().position(new LatLng(p_latitude, p_longitude)).title(p_name);
-            myMarker = gMap.addMarker(i_place);
-            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curr_lat, curr_long), 12.0f));
-            distanceBeforeAlarm = CalculationByDistance(curr_lat, curr_long, p_latitude, p_longitude);
-            if(distanceBeforeAlarm<distanceToDest){
-                Intent i4 = new Intent();
-                startActivity(i4); 
-            }
-        }
+//        if ( ContextCompat.checkSelfPermission( this, android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
+//
+//            ActivityCompat.requestPermissions( this, new String[] {  android.Manifest.permission.ACCESS_COARSE_LOCATION  },
+//                    LocationService.MY_PERMISSION_ACCESS_COURSE_LOCATION );
+//        }
+
+//        if(inTransit == true){
+//            i_place = new MarkerOptions().position(new LatLng(p_latitude, p_longitude)).title(p_name);
+//            myMarker = gMap.addMarker(i_place);
+//            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curr_lat, curr_long), 12.0f));
+//        }
 
 
     }

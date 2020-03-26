@@ -2,8 +2,13 @@ package com.example.iat359_finalapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.Button;
 
@@ -15,6 +20,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     Button startButton, historyButton, settingsButton;
+
+    LocationManager locationManager;
 
 
     @Override
@@ -34,7 +41,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         settingsButton = (Button)findViewById(R.id.settings_button);
         settingsButton.setOnClickListener(this);
 
-
+//getting current location
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        //check if gps is enabled
+        gpsStatus();
 
 
     }
@@ -53,6 +63,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(v.getId() == R.id.settings_button){
             Intent i = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(i);
+        }
+    }
+
+    public void gpsStatus() {
+        //check if gps is enabled
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("GPS is disabled. Enable it now?")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                            dialog.cancel();
+                        }
+                    });
+            final AlertDialog alert = builder.create();
+            alert.show();
         }
     }
 }
