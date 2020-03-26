@@ -166,24 +166,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         gMap.setOnMyLocationButtonClickListener(this);
         gMap.setOnMyLocationClickListener(this);
 
-
-
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-//        }
-
-
-
-//        if ( ContextCompat.checkSelfPermission( this, android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
-//
-//            ActivityCompat.requestPermissions( this, new String[] {  android.Manifest.permission.ACCESS_COARSE_LOCATION  },
-//                    LocationService.MY_PERMISSION_ACCESS_COURSE_LOCATION );
-//        }
-
         if(inTransit == true){
             i_place = new MarkerOptions().position(new LatLng(p_latitude, p_longitude)).title(p_name);
             myMarker = gMap.addMarker(i_place);
-
         }
 
 
@@ -333,10 +318,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curr_lat, curr_long), 12.0f));
 
                 double ugh = CalculationByDistance(curr_lat, curr_long, p_latitude, p_longitude);
-                DistanceTo.setText(ugh + "km");
-                if(ugh<=distanceBeforeAlarm){
-                    Intent i4 = new Intent();
+                DecimalFormat df = new DecimalFormat("#.##");
+                DistanceTo.setText(df.format(ugh) + "km");
+                if(ugh<=distanceBeforeAlarm+1){
+                    Intent i4 = new Intent(MapsActivity.this, MainActivity.class);
+                    inTransit = false;
                     startActivity(i4);
+                    Toast.makeText(this, "Transit is done", Toast.LENGTH_SHORT).show();
                 }
             }
         }
