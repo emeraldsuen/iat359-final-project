@@ -51,7 +51,7 @@ import java.util.Arrays;
 import static java.lang.String.valueOf;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, TaskLoadedCallback,
-        GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, PlaceSelectionListener, View.OnClickListener{
+        GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, PlaceSelectionListener, View.OnClickListener, LocationListener {
 
     private GoogleMap gMap;
     private MarkerOptions i_place, f_place;
@@ -81,7 +81,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
 
 
-
         //setting up the places
         i_place = new MarkerOptions().position(new LatLng(49.282730, -123.120735)).title("Location 1");
         f_place = new MarkerOptions().position(new LatLng(49.248810, -122.980507)).title("Location 2");
@@ -95,6 +94,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //getting current location
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    Activity#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for Activity#requestPermissions for more details.
+            return;
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, this);
         //check if gps is enabled
         gpsStatus();
 
@@ -103,8 +113,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             if (gMap != null) {
                 gMap.setMyLocationEnabled(true);
-
-
             }
         } else {
             PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE, Manifest.permission.ACCESS_FINE_LOCATION, true);
@@ -157,19 +165,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         gMap.setMyLocationEnabled(true);
         gMap.setOnMyLocationButtonClickListener(this);
         gMap.setOnMyLocationClickListener(this);
+
+
+
 //        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
 //        }
 
-        if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-            return;
-        }else{
-            // Write you code here if permission already given.
-            currLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            curr_lat = currLocation.getLatitude();
-            curr_long = currLocation.getLongitude();
-        }
+
 
 //        if ( ContextCompat.checkSelfPermission( this, android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
 //
@@ -177,11 +180,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                    LocationService.MY_PERMISSION_ACCESS_COURSE_LOCATION );
 //        }
 
-//        if(inTransit == true){
-//            i_place = new MarkerOptions().position(new LatLng(p_latitude, p_longitude)).title(p_name);
-//            myMarker = gMap.addMarker(i_place);
-//            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curr_lat, curr_long), 12.0f));
-//        }
+        if(inTransit == true){
+            i_place = new MarkerOptions().position(new LatLng(p_latitude, p_longitude)).title(p_name);
+            myMarker = gMap.addMarker(i_place);
+
+        }
 
 
     }
@@ -312,6 +315,45 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onTaskDone(Object... values) {
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        if(inTransit == true) {
+            if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                return;
+            } else {
+                // Write you code here if permission already given.
+                location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                currLocation = location;
+                curr_lat = currLocation.getLatitude();
+                curr_long = currLocation.getLongitude();
+                gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curr_lat, curr_long), 12.0f));
+
+                double ugh = CalculationByDistance(curr_lat, curr_long, p_latitude, p_longitude);
+                DistanceTo.setText(ugh + "km");
+                if(ugh<=distanceBeforeAlarm){
+                    Intent i4 = new Intent();
+                    startActivity(i4);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
 
     }
 }
