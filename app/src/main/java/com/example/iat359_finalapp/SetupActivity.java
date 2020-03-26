@@ -35,6 +35,8 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
     Button toneButton;
     Place destination;
 
+    boolean inTransit = false;
+
     Button startButton;
 
     MyDatabase db;
@@ -46,6 +48,8 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
     int progressChangedValue = 0;
     String s;
 
+    double dest_lat, dest_long;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +57,9 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_setup);
 
         Intent i = getIntent();
+
+        dest_lat =  i.getDoubleExtra("DESTINATION_LAT", 0.0);
+        dest_long = i.getDoubleExtra("DESTINATION_LONG", 0.0);
 
         destinationNameTextView = (TextView) findViewById(R.id.locationText);
         dest_name = i.getStringExtra("DESTINATION_STRING");
@@ -157,6 +164,7 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
+        //starting trip
         if (v.getId() == R.id.startTrip_Button) {
             if (vibrate.isChecked()) {
                 outputType = "vibrate";
@@ -186,7 +194,17 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
                 Toast.makeText(this, "success", Toast.LENGTH_SHORT).show();
             }
 
-            Intent i = new Intent(SetupActivity.this, InTransit.class);
+
+            inTransit = true;
+
+            Intent i = new Intent(SetupActivity.this, MapsActivity.class);
+
+            i.putExtra("InTransit", inTransit);
+            i.putExtra("Dest_lat", dest_lat);
+            i.putExtra("Dest_long", dest_long);
+            i.putExtra("Dest_name", name);
+            i.putExtra("Dest_dist", dist_km);
+
             startActivity(i);
         } else if (v.getId() == R.id.ringtone_button) {
             Toast.makeText(this, "ringtone", Toast.LENGTH_SHORT).show();

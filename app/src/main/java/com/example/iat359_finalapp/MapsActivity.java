@@ -62,16 +62,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     double curr_lat, curr_long;
     //    double lat_dist, long_dist;
     double distanceToDest;
+    double distanceBeforeAlarm;
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+
+    Boolean inTransit = false;
+    String p_name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        //button
-        getDirButton = (Button) findViewById(R.id.getDirection_button);
-        getDirButton.setOnClickListener(this);
+
+
 
         //setting up the places
         i_place = new MarkerOptions().position(new LatLng(49.282730, -123.120735)).title("Location 1");
@@ -99,6 +102,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } else {
             PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE, Manifest.permission.ACCESS_FINE_LOCATION, true);
         }
+
+        Intent i2 = getIntent();
+
+        // check if there are extras
+        Bundle extras = i2.getExtras();
+        if(extras == null){
+
+        }
+        else {
+            inTransit = i2.getBooleanExtra("InTransit", true);
+            p_latitude = i2.getDoubleExtra("Dest_lat", 0.0);
+            p_longitude = i2.getDoubleExtra("Dest_long", 0.0);
+            p_name = i2.getStringExtra("Dest_name");
+            distanceBeforeAlarm = i2.getDoubleExtra("Dest_dist", 0.0);
+
+        }
+        //button
+        if(inTransit == false) {
+            getDirButton = (Button) findViewById(R.id.getDirection_button);
+            getDirButton.setText("Get Direction");
+            getDirButton.setOnClickListener(this);
+        }else if(inTransit == true){
+            getDirButton = (Button) findViewById(R.id.getDirection_button);
+            getDirButton.setText("In Transit");
+            getDirButton.setOnClickListener(this);
+        }
+
         //Search Location
         autocompleteSupportFragment = (AutocompleteSupportFragment)
                 getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
@@ -125,6 +155,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             curr_long = currLocation.getLongitude();
         }
 
+        if(inTransit == true){
+            i_place = new MarkerOptions().position(new LatLng(p_latitude, p_longitude)).title(p_name);
+            myMarker = gMap.addMarker(i_place);
+            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curr_lat, curr_long), 12.0f));
+            distanceBeforeAlarm = CalculationByDistance(curr_lat, curr_long, p_latitude, p_longitude);
+            if(distanceBeforeAlarm<distanceToDest){
+                Intent i4 = new Intent();
+                startActivity(i4); 
+            }
+        }
+
 
     }
 
@@ -144,12 +185,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return url;
     }
 
-    @Override
-    public void onTaskDone(Object... values) {
-        if (currentPolyline != null)
-            currentPolyline.remove();
-//        currentPolyline = gMap.addPolyline((PolylineOptions) values[0]);
-    }
 
     public void gpsStatus() {
         //check if gps is enabled
@@ -187,18 +222,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onPlaceSelected(@NonNull Place place) {
-//        Toast.makeText(this,"Place chosen: " + place.getLatLng().longitude, Toast.LENGTH_SHORT).show();
-        destination = place;
-        p_latitude = place.getLatLng().latitude;
-        p_longitude = place.getLatLng().longitude;
-        i_place = new MarkerOptions().position(new LatLng(p_latitude, p_longitude)).title(destination.getName());
-        if (myMarker == null) {
-            myMarker = gMap.addMarker(i_place);
-        } else if (myMarker != null) {
-            myMarker.remove();
-            myMarker = gMap.addMarker(i_place);
+        if(inTransit==false) {
+            destination = place;
+            p_latitude = place.getLatLng().latitude;
+            p_longitude = place.getLatLng().longitude;
+            i_place = new MarkerOptions().position(new LatLng(p_latitude, p_longitude)).title(destination.getName());
+            if (myMarker == null) {
+                myMarker = gMap.addMarker(i_place);
+            } else if (myMarker != null) {
+                myMarker.remove();
+                myMarker = gMap.addMarker(i_place);
+            }
+            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(p_latitude, p_longitude), 12.0f));
         }
-        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(p_latitude, p_longitude), 12.0f));
     }
 
     @Override
@@ -230,7 +266,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.getDirection_button) {
+        if (v.getId() == R.id.getDirection_button && inTransit == false) {
             //send info to setup page
             Intent i = new Intent(MapsActivity.this, SetupActivity.class);
 
@@ -242,11 +278,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 i.putExtra("DESTINATION_STRING", destination.getName());
                 i.putExtra("DESTINATION_DISTANCE", distanceToDest);
+                i.putExtra("DESTINATION_LAT", p_latitude);
+                i.putExtra("DESTINATION_LONG", p_longitude);
                 startActivity(i);
             } else {
                 Toast.makeText(this, "Please select a destination" + curr_lat + " " + curr_long, Toast.LENGTH_SHORT).show();
             }
 
         }
+        else if(v.getId() == R.id.getDirection_button && inTransit == true){
+            Intent i3 = new Intent(MapsActivity.this, MainActivity.class);
+            inTransit = false;
+            startActivity(i3);
+        }
+    }
+
+    @Override
+    public void onTaskDone(Object... values) {
+
     }
 }
