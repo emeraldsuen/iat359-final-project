@@ -138,6 +138,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             getDirButton = (Button) findViewById(R.id.getDirection_button);
             getDirButton.setText("Get Direction");
             getDirButton.setOnClickListener(this);
+            DistanceTo = (TextView) findViewById(R.id.alarmTextView);
         }else if(inTransit == true){
             getDirButton = (Button) findViewById(R.id.getDirection_button);
             getDirButton.setText("In Transit");
@@ -239,7 +240,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 myMarker = gMap.addMarker(i_place);
             }
             gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(p_latitude, p_longitude), 12.0f));
+//            distanceToDest = CalculationByDistance(curr_lat, curr_long, p_latitude, p_longitude);
+//            DistanceTo.setText("Distance" + distanceToDest);
         }
+
     }
 
     @Override
@@ -316,16 +320,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 curr_lat = currLocation.getLatitude();
                 curr_long = currLocation.getLongitude();
                 gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curr_lat, curr_long), 12.0f));
-
                 double ugh = CalculationByDistance(curr_lat, curr_long, p_latitude, p_longitude);
-                DecimalFormat df = new DecimalFormat("#.##");
-                DistanceTo.setText(df.format(ugh) + "km");
-                if(ugh<=distanceBeforeAlarm+1){
+//                DecimalFormat df = new DecimalFormat("#.##");
+                DistanceTo.setText(ugh+"");
+//                DistanceTo.setText(df.format(ugh) + "km");
+                if(ugh<=distanceBeforeAlarm){
                     Intent i4 = new Intent(MapsActivity.this, MainActivity.class);
                     inTransit = false;
                     startActivity(i4);
                     Toast.makeText(this, "Transit is done", Toast.LENGTH_SHORT).show();
                 }
+            }
+        }
+        else {      //not in transit
+            if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                return;
+            } else {
+                // Write you code here if permission already given.
+                location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                currLocation = location;
+                curr_lat = currLocation.getLatitude();
+                curr_long = currLocation.getLongitude();
             }
         }
     }
