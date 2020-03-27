@@ -13,23 +13,23 @@ import android.widget.Toast;
 /**
  * Created by helmine on 2015-02-02.
  */
-public class  MyHelper extends SQLiteOpenHelper {
+public class MyHelper extends SQLiteOpenHelper {
 
     private Context context;
 
     private static final String CREATE_TABLE =
-            "CREATE TABLE "+
+            "CREATE TABLE " +
                     Constants.TABLE_NAME + " (" +
                     Constants.RID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     Constants.NAME + " TEXT, " +
                     Constants.TYPE + " TEXT, " +
                     Constants.DISTANCE + " TEXT, " +
-                    Constants.RINGTONE + " TEXT);" ;
+                    Constants.RINGTONE + " TEXT);";
 
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS " + Constants.TABLE_NAME;
 
-    public MyHelper(Context context){
-        super (context, Constants.DATABASE_NAME, null, Constants.DATABASE_VERSION);
+    public MyHelper(Context context) {
+        super(context, Constants.DATABASE_NAME, null, Constants.DATABASE_VERSION);
         this.context = context;
     }
 

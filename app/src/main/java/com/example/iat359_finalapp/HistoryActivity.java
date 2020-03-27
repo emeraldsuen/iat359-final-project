@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class HistoryActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
+public class HistoryActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     RecyclerView myRecycler;
     MyDatabase db;
@@ -64,6 +64,6 @@ public class HistoryActivity extends AppCompatActivity implements AdapterView.On
         TextView routeDistTextView = (TextView) view.findViewById(R.id.routeDistEntry);
         TextView routeRingtoneTextView = (TextView) view.findViewById(R.id.routeRingtoneEntry);
 
-        Toast.makeText(this, "row " + (1+position) + ":  " + routeNameTextView.getText() +" " + routeTypeTextView.getText() +" "+ routeDistTextView.getText()+" "+ routeRingtoneTextView.getText(), Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "row " + (1 + position) + ":  " + routeNameTextView.getText() + " " + routeTypeTextView.getText() + " " + routeDistTextView.getText() + " " + routeRingtoneTextView.getText(), Toast.LENGTH_LONG).show();
     }
 }

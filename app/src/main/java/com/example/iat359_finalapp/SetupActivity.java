@@ -60,9 +60,11 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup);
 
+        Log.i("TEST", "SetupActivity");
+
         Intent i = getIntent();
 
-        dest_lat =  i.getDoubleExtra("DESTINATION_LAT", 0.0);
+        dest_lat = i.getDoubleExtra("DESTINATION_LAT", 0.0);
         dest_long = i.getDoubleExtra("DESTINATION_LONG", 0.0);
 
         destinationNameTextView = (TextView) findViewById(R.id.locationText);
@@ -91,7 +93,6 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
         headphones = (RadioButton) findViewById(R.id.headphones_Radio);
 
         toneName = (TextView) findViewById(R.id.audio_name);
-
 
         //database
         db = new MyDatabase(this);
@@ -132,60 +133,6 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (resultCode == RESULT_OK && requestCode == 6) {
-//            Uri i = data.getData();  // getData
-//            s = i.getPath(); // getPath
-//            File k = new File(s);  // set File from path
-//
-//            toneName.setText(s);
-//            Log.i(TAG, s);
-//
-////            if (s != null) {      // file.exists
-////
-////                ContentValues values = new ContentValues();
-////                values.put(MediaStore.MediaColumns.DATA, k.getAbsolutePath());
-////                values.put(MediaStore.MediaColumns.TITLE, "ring");
-////                values.put(MediaStore.MediaColumns.MIME_TYPE, "audio/mp3");
-////                values.put(MediaStore.MediaColumns.SIZE, k.length());
-////                values.put(MediaStore.Audio.Media.ARTIST, R.string.app_name);
-////                values.put(MediaStore.Audio.Media.IS_RINGTONE, true);
-////                values.put(MediaStore.Audio.Media.IS_NOTIFICATION, true);
-////                values.put(MediaStore.Audio.Media.IS_ALARM, true);
-////                values.put(MediaStore.Audio.Media.IS_MUSIC, true);
-////
-////
-////                Uri uri = MediaStore.Audio.Media.getContentUriForPath(k.getAbsolutePath());
-////                getContentResolver().delete(uri, MediaStore.MediaColumns.DATA + "=\"" + k.getAbsolutePath() + "\"", null);
-////                Uri newUri = getContentResolver().insert(uri, values);
-////
-////                try {
-////                    RingtoneManager.setActualDefaultRingtoneUri(
-////                            SetupActivity.this, RingtoneManager.TYPE_RINGTONE,
-////                            newUri);
-////                } catch (Throwable t) {
-////
-////                }
-////            }
-//        }
-//    }
-
-//    public String getRealPathFromURI(Context context, Uri contentUri) {
-//        Cursor cursor = null;
-//        try {
-//            String[] proj = {MediaStore.Images.Media.DATA};
-//            cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
-//            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-//            cursor.moveToFirst();
-//            return cursor.getString(column_index);
-//        } finally {
-//            if (cursor != null) {
-//                cursor.close();
-//            }
-//        }
-//    }
-
     @Override
     public void onClick(View v) {
         //starting trip
@@ -204,15 +151,12 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
                 Toast.makeText(this, "Please select a output source.", Toast.LENGTH_SHORT).show();
             }
 
-
             String name = dest_name;
             String type = "transit";
-//            dist_km = (int) dist_km;
-//            String distance = String.valueOf(dist_km) + "km";
             String distance = progressChangedValue + "km";
-            String ringtone = s;
+            String volume = "" + volChangedValue;
 
-            long id = db.insertData(name, type, distance, ringtone);
+            long id = db.insertData(name, type, distance, volume);
             if (id < 0) {
                 Toast.makeText(this, "fail", Toast.LENGTH_SHORT).show();
             } else {
@@ -224,6 +168,7 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
 
             Intent i = new Intent(SetupActivity.this, MapsActivity.class);
 
+            //attach extras
             i.putExtra("InTransit", inTransit);
             i.putExtra("Dest_lat", dest_lat);
             i.putExtra("Dest_long", dest_long);
@@ -233,16 +178,7 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
             i.putExtra("VOL", volChangedValue);
             i.putExtra("VIBRATE", vibrate);
 
-
             startActivity(i);
         }
-//        else if (v.getId() == R.id.ringtone_button) {
-//            Toast.makeText(this, "ringtone", Toast.LENGTH_SHORT).show();
-//            Intent intent1 = new Intent();
-//            intent1.setAction(Intent.ACTION_GET_CONTENT);
-//            intent1.setType("audio/*");
-//            startActivityForResult(
-//                    Intent.createChooser(intent1, "Choose Sound File"), 6);
-//        }
     }
 }

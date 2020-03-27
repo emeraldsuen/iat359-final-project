@@ -25,7 +25,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     @Override
     public MyAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(row,parent,false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(row, parent, false);
         MyViewHolder viewHolder = new MyViewHolder(v);
         return viewHolder;
     }
@@ -33,7 +33,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     @Override
     public void onBindViewHolder(MyAdapter.MyViewHolder holder, int position) {
 
-        String[]  results = (list.get(position).toString()).split(",");
+        String[] results = (list.get(position).toString()).split(",");
         holder.nameTextView.setText(results[0]);
         holder.typeTextView.setText(results[1]);
         holder.distTextView.setText(results[2]);
@@ -45,7 +45,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         return list.size();
     }
 
-    public static class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public static class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public TextView nameTextView;
         public TextView typeTextView;
@@ -70,7 +70,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         @Override
         public void onClick(View view) {
             Toast.makeText(context,
-                    "You have clicked " + ((TextView)view.findViewById(R.id.routeNameEntry)).getText().toString(),
+                    "You have clicked " + ((TextView) view.findViewById(R.id.routeNameEntry)).getText().toString(),
                     Toast.LENGTH_SHORT).show();
         }
     }

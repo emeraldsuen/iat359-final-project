@@ -35,8 +35,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
@@ -59,7 +57,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap gMap;
     private MarkerOptions i_place, f_place;
     private double p_latitude, p_longitude;
-    private Polyline currentPolyline;
     Button getDirButton;
     TextView DistanceTo;
     LocationManager locationManager;
@@ -80,6 +77,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String p_name;
     int vol;
     boolean vibrateUser;
+    boolean ringing;
 
     Vibrator v;
 
@@ -88,6 +86,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        Log.i("TEST", "MapsActivity");
 
         //setting up the places
         i_place = new MarkerOptions().position(new LatLng(49.282730, -123.120735)).title("Location 1");
@@ -133,6 +132,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (extras == null) {
 
         } else {
+            //get extras from SetupActivity
             inTransit = i2.getBooleanExtra("InTransit", true);
             p_latitude = i2.getDoubleExtra("Dest_lat", 0.0);
             p_longitude = i2.getDoubleExtra("Dest_long", 0.0);
@@ -181,8 +181,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             i_place = new MarkerOptions().position(new LatLng(p_latitude, p_longitude)).title(p_name);
             myMarker = gMap.addMarker(i_place);
         }
-
-
     }
 
     private String getUrl(LatLng origin, LatLng dest, String directionMode) {
@@ -253,7 +251,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //            distanceToDest = CalculationByDistance(curr_lat, curr_long, p_latitude, p_longitude);
 //            DistanceTo.setText("Distance" + distanceToDest);
         }
-
     }
 
     @Override
@@ -330,33 +327,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 curr_long = currLocation.getLongitude();
                 gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curr_lat, curr_long), 12.0f));
                 double ugh = CalculationByDistance(curr_lat, curr_long, p_latitude, p_longitude);
-//                DecimalFormat df = new DecimalFormat("#.##");
-                DistanceTo.setText(ugh + "  " +distanceBeforeAlarm);
-//                DistanceTo.setText(df.format(ugh) + "km");
-                //alarms were here
+                DistanceTo.setText(ugh + "  " + distanceBeforeAlarm);
 
+                //if user is close enough, sound/vibrate
                 if (ugh <= distanceBeforeAlarm) {
                     if (vibrateUser == true) {
                         vibrate();
                     }
                     Log.i("TEST", outputType);
                     if (outputType.equals("alarm")) {
-//                    ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_ALARM, vol);
-//                    tg.startTone(ToneGenerator.TONE_PROP_BEEP, 1000);
                         soundAlarm();
                         Log.i("TEST", "alarm ringing");
                     } else if (outputType.equals("headphones")) {
-//                    ToneGenerator tg2 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
-//                    tg2.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 200);
                         soundMusic();
                         Log.i("TEST", "music ringing");
-
                     }
 
-                    Intent i4 = new Intent(MapsActivity.this, MainActivity.class);
-                    inTransit = false;
-                    startActivity(i4);
-                    Toast.makeText(this, "Transit is done", Toast.LENGTH_SHORT).show();
+                    if (ringing == false) {
+                        Intent i4 = new Intent(MapsActivity.this, MainActivity.class);
+                        inTransit = false;
+                        startActivity(i4);
+                        Toast.makeText(this, "Transit is done", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         } else {      //not in transit
@@ -389,22 +381,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void vibrate() {
-        // Get instance of Vibrator from current Context
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-
-        // Vibrate for 400 milliseconds
         v.vibrate(400);
-
-
     }
 
     private void soundMusic() {
         ToneGenerator tg1 = new ToneGenerator(AudioManager.STREAM_MUSIC, vol);
-        tg1.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 1000);
+        int counter = 0;
+        for (int i = 0; i < 5; i++) {
+            tg1.startTone(ToneGenerator.TONE_CDMA_PIP, 1000);
+            counter++;
+            if (counter <= 5) {
+                ringing = true;
+            } else {
+                ringing = false;
+            }
+        }
     }
 
     private void soundAlarm() {
         ToneGenerator tg2 = new ToneGenerator(AudioManager.STREAM_ALARM, vol);
-        tg2.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 1000);
+        int counter = 0;
+        for (int i = 0; i < 5; i++) {
+            tg2.startTone(ToneGenerator.TONE_CDMA_PIP, 1000);
+            counter++;
+            if (counter <= 5) {
+                ringing = true;
+            } else {
+                ringing = false;
+            }
+        }
     }
 }
