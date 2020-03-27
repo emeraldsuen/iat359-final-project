@@ -11,12 +11,18 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.os.Vibrator;
 import android.provider.Settings;
 import android.util.Log;
@@ -48,10 +54,11 @@ import org.w3c.dom.Text;
 import java.security.acl.Permission;
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.Locale;
 
 import static java.lang.String.valueOf;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, TaskLoadedCallback,
+public class MapsActivity extends FragmentActivity implements SensorEventListener, OnMapReadyCallback, TaskLoadedCallback,
         GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, PlaceSelectionListener, View.OnClickListener, LocationListener {
 
     private GoogleMap gMap;
@@ -79,14 +86,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     boolean vibrateUser;
     boolean ringing;
 
-    Vibrator v;
+    private SensorManager sensorManager;
+    private Sensor accel;
+    private float[] mGravity;
+    private double mAccel;
+    private double mAccelCurrent;
+    private double mAccelLast;
+
+    boolean userInactive = true;
+    private CountDownTimer mCountDownTimer;
+    TextView timeCountDown;
+    private boolean mTimerRunning;
+
+    //CHANGE THE INACTIVE TIMER HERE
+    private static final long START_TIME_IN_MILLIS = 60000;
+    private long mTimeLeftInMillis = START_TIME_IN_MILLIS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        Log.i("TEST", "MapsActivity");
+
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        accel = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+//        sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_NORMAL);
+        mAccel = 0.00f;
+        mAccelCurrent = SensorManager.GRAVITY_EARTH;
+        mAccelLast = SensorManager.GRAVITY_EARTH;
+
+        timeCountDown = (TextView) findViewById(R.id.timeCountDown);
 
         //setting up the places
         i_place = new MarkerOptions().position(new LatLng(49.282730, -123.120735)).title("Location 1");
@@ -349,6 +378,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         startActivity(i4);
                         Toast.makeText(this, "Transit is done", Toast.LENGTH_SHORT).show();
                     }
+                } else {    //if user is not there yet
+                    sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_NORMAL);
+                    if (mCountDownTimer == null) {
+                        startTimer();
+                    }
+//                    Log.i("TEST", "" + mTimeLeftInMillis);
+                    if (userInactive = true && mTimeLeftInMillis <= 1000) {
+                        vibrate();
+                    }
                 }
             }
         } else {      //not in transit
@@ -377,6 +415,91 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onProviderDisabled(String provider) {
+
+    }
+
+    protected void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(this);
+    }
+
+    protected void onResume() {
+        super.onResume();
+//        sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            mGravity = event.values.clone();
+            // Shake detection
+            double x = mGravity[0];
+            double y = mGravity[1];
+            double z = mGravity[2];
+            mAccelLast = mAccelCurrent;
+            mAccelCurrent = Math.sqrt(x * x + y * y + z * z);
+            ;
+            double delta = mAccelCurrent - mAccelLast;
+            mAccel = mAccel * 0.9f + delta;
+            // Make this higher or lower according to how much
+            // motion you want to detect
+
+            if (mAccel > 4.75) {
+                // do something
+                userInactive = false;
+                resetTimer();
+//                vibrate();
+//                pauseTimer();
+            } else {
+                userInactive = true;
+            }
+        }
+    }
+
+    private void startTimer() {
+        mCountDownTimer = new CountDownTimer(mTimeLeftInMillis, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                mTimeLeftInMillis = millisUntilFinished;
+                updateCountDownText();
+            }
+
+            @Override
+            public void onFinish() {
+                mTimerRunning = false;
+            }
+        }.start();
+
+        mTimerRunning = true;
+    }
+
+    private void pauseTimer() {
+        mCountDownTimer.cancel();
+        Log.i("TEST", "destroy timer");
+        mTimerRunning = false;
+    }
+
+    private void resetTimer() {
+        if (mCountDownTimer != null) {
+            pauseTimer();
+        }
+        mTimeLeftInMillis = START_TIME_IN_MILLIS;
+        updateCountDownText();
+        startTimer();
+    }
+
+    private void updateCountDownText() {
+        int minutes = (int) (mTimeLeftInMillis / 1000) / 60;
+        int seconds = (int) (mTimeLeftInMillis / 1000) % 60;
+
+        String timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
+
+        timeCountDown.setText(timeLeftFormatted);
+    }
+
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
 
@@ -412,4 +535,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
+
 }
