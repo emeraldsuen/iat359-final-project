@@ -63,7 +63,7 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
 
     //Google Maps
     private GoogleMap gMap;
-    private MarkerOptions i_place, f_place;
+    private MarkerOptions i_place;
     private double p_latitude, p_longitude;
     Button getDirButton;
     TextView DistanceTo;
@@ -121,16 +121,9 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
         mAccelLast = SensorManager.GRAVITY_EARTH;
         timeCountDown = (TextView) findViewById(R.id.timeCountDown);
 
-        //setting up the places
-        i_place = new MarkerOptions().position(new LatLng(49.282730, -123.120735)).title("Location 1");
-        f_place = new MarkerOptions().position(new LatLng(49.248810, -122.980507)).title("Location 2");
-
-
+        //initializing the maps
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
         mapFragment.getMapAsync(MapsActivity.this);
-
-        String url = getUrl(i_place.getPosition(), f_place.getPosition(), "driving");
-        new FetchURL(MapsActivity.this).execute(url, "driving");
 
         //getting current location
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -145,6 +138,7 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
             return;
         }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, this);
+
         //check if gps is enabled
         gpsStatus();
 
@@ -158,6 +152,7 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
             PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE, Manifest.permission.ACCESS_FINE_LOCATION, true);
         }
 
+        //if the activity was directed from the setup activity then get values to start transit
         Intent i2 = getIntent();
         // check if there are extras
         Bundle extras = i2.getExtras();
@@ -195,6 +190,7 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
         autocompleteSupportFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
         autocompleteSupportFragment.setOnPlaceSelectedListener(this);
 
+        //Initialize google maps search bar
         String apiKey = getString(R.string.api_key);
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), apiKey);
@@ -205,33 +201,17 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
     @Override
     public void onMapReady(GoogleMap googleMap) {
         gMap = googleMap;
-        //google told me to do this
+        //Enabling the phone's location
         gMap.setMyLocationEnabled(true);
         gMap.setOnMyLocationButtonClickListener(this);
         gMap.setOnMyLocationClickListener(this);
 
+        //if device is in transit then place destination marker
         if (inTransit == true) {
             i_place = new MarkerOptions().position(new LatLng(p_latitude, p_longitude)).title(p_name);
             myMarker = gMap.addMarker(i_place);
         }
     }
-
-    private String getUrl(LatLng origin, LatLng dest, String directionMode) {
-        // Origin of route
-        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
-        // Destination of route
-        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
-        // Mode
-        String mode = "mode=" + directionMode;
-        // Building the parameters to the web service
-        String parameters = str_origin + "&" + str_dest + "&" + mode;
-        // Output format
-        String output = "json";
-        // Building the url to the web service
-        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters + "&key=" + getString(R.string.google_maps_key);
-        return url;
-    }
-
 
     public void gpsStatus() {
         //check if gps is enabled
@@ -269,6 +249,7 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
 
     @Override
     public void onPlaceSelected(@NonNull Place place) {
+        //if place was selected from google search while not in transit
         if (inTransit == false) {
             destination = place;
             p_latitude = place.getLatLng().latitude;
@@ -290,9 +271,9 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
     }
 
     // calculates the distance away from destination
+    //code borrowed from https://stackoverflow.com/questions/14394366/find-distance-between-two-points-on-map-using-google-map-api-v2
     public double CalculationByDistance(double lat1, double long1, double lat2, double long2) {
         int Radius = 6371;// radius of earth in Km
-
         double dLat = Math.toRadians(lat2 - lat1);
         double dLon = Math.toRadians(long2 - long1);
         double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
@@ -324,13 +305,14 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
                 //intent to move to setupactivity with extras to include
                 //calculation
                 distanceToDest = CalculationByDistance(curr_lat, curr_long, p_latitude, p_longitude);
-
+                //store extras for setup page
                 i.putExtra("DESTINATION_STRING", destination.getName());
                 i.putExtra("DESTINATION_DISTANCE", distanceToDest);
                 i.putExtra("DESTINATION_LAT", p_latitude);
                 i.putExtra("DESTINATION_LONG", p_longitude);
                 startActivity(i);
             } else {
+                //if no place was selected
                 Toast.makeText(this, "Please select a destination" + curr_lat + " " + curr_long, Toast.LENGTH_SHORT).show();
             }
 
@@ -401,6 +383,7 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
                 return;
             } else {
                 // Write you code here if permission already given.
+                //constantly updating phone's current location
                 location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 currLocation = location;
                 curr_lat = currLocation.getLatitude();
