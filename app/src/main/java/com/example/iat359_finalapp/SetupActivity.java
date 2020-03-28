@@ -57,8 +57,6 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup);
 
-        Log.i("TEST", "SetupActivity");
-
         Intent i = getIntent();
 
         dest_lat = i.getDoubleExtra("DESTINATION_LAT", 0.0);
@@ -98,9 +96,8 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
         startButton = (Button) findViewById(R.id.startTrip_Button);
         startButton.setOnClickListener(this);
 
-        //SeekBarListener
+        //SeekBarListener for distance
         distSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 progressChangedValue = progress;
             }
@@ -113,6 +110,7 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
             }
         });
 
+        //seekbar for volume
         volSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -153,6 +151,7 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
             String distance = progressChangedValue + "km";
             String volume = "" + volChangedValue;
 
+            //insert data into SQLite db
             long id = db.insertData(name, type, distance, volume);
             if (id < 0) {
                 Toast.makeText(this, "fail", Toast.LENGTH_SHORT).show();
@@ -163,6 +162,7 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
             double sigh = distSeekBar.getProgress();
             inTransit = true;
 
+            //directs to mapsactivity with trip started
             Intent i = new Intent(SetupActivity.this, MapsActivity.class);
 
             //attach extras
