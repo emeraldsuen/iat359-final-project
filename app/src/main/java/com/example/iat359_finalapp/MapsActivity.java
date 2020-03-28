@@ -61,6 +61,7 @@ import static java.lang.String.valueOf;
 public class MapsActivity extends FragmentActivity implements SensorEventListener, OnMapReadyCallback, TaskLoadedCallback,
         GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, PlaceSelectionListener, View.OnClickListener, LocationListener {
 
+    //Google Maps
     private GoogleMap gMap;
     private MarkerOptions i_place, f_place;
     private double p_latitude, p_longitude;
@@ -69,6 +70,7 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
     LocationManager locationManager;
     AutocompleteSupportFragment autocompleteSupportFragment;
 
+    //lat/long tracking
     private Place destination;
     Marker myMarker;
     Location currLocation;
@@ -79,6 +81,7 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
+    //variables used for alarm
     Boolean inTransit = false;
     String outputType;
     String p_name;
@@ -86,6 +89,7 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
     boolean vibrateUser;
     boolean ringing;
 
+    //accelerometer
     private SensorManager sensorManager;
     private Sensor accel;
     private float[] mGravity;
@@ -93,12 +97,14 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
     private double mAccelCurrent;
     private double mAccelLast;
 
+    //countdown timer
     boolean userInactive = true;
     private CountDownTimer mCountDownTimer;
     TextView timeCountDown;
     private boolean mTimerRunning;
 
     //CHANGE THE INACTIVE TIMER HERE
+    //this would ideally be around 10 mins (600000 ms), but for testing purposes this is set as 1 minute
     private static final long START_TIME_IN_MILLIS = 60000;
     private long mTimeLeftInMillis = START_TIME_IN_MILLIS;
 
@@ -107,14 +113,12 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-
+        //accelometer/timer initialize
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         accel = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-//        sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_NORMAL);
         mAccel = 0.00f;
         mAccelCurrent = SensorManager.GRAVITY_EARTH;
         mAccelLast = SensorManager.GRAVITY_EARTH;
-
         timeCountDown = (TextView) findViewById(R.id.timeCountDown);
 
         //setting up the places
@@ -155,7 +159,6 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
         }
 
         Intent i2 = getIntent();
-
         // check if there are extras
         Bundle extras = i2.getExtras();
         if (extras == null) {
@@ -172,7 +175,8 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
             vibrateUser = i2.getBooleanExtra("VIBRATE", false);
 
         }
-        //button
+
+        //button states in mapactivity
         if (inTransit == false) {
             getDirButton = (Button) findViewById(R.id.getDirection_button);
             getDirButton.setText("Get Direction");
@@ -277,8 +281,6 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
                 myMarker = gMap.addMarker(i_place);
             }
             gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(p_latitude, p_longitude), 12.0f));
-//            distanceToDest = CalculationByDistance(curr_lat, curr_long, p_latitude, p_longitude);
-//            DistanceTo.setText("Distance" + distanceToDest);
         }
     }
 
@@ -287,6 +289,7 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
 
     }
 
+    // calculates the distance away from destination
     public double CalculationByDistance(double lat1, double long1, double lat2, double long2) {
         int Radius = 6371;// radius of earth in Km
 
@@ -318,6 +321,7 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
             //if destination has been selected
             if (destination != null) {
 
+                //intent to move to setupactivity with extras to include
                 //calculation
                 distanceToDest = CalculationByDistance(curr_lat, curr_long, p_latitude, p_longitude);
 
@@ -331,6 +335,7 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
             }
 
         } else if (v.getId() == R.id.getDirection_button && inTransit == true) {
+            //snooze/dismiss button
             Intent i3 = new Intent(MapsActivity.this, MainActivity.class);
             inTransit = false;
             startActivity(i3);
@@ -363,13 +368,13 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
                     if (vibrateUser == true) {
                         vibrate();
                     }
-                    Log.i("TEST", outputType);
+//                    Log.i("TEST", outputType);
                     if (outputType.equals("alarm")) {
                         soundAlarm();
-                        Log.i("TEST", "alarm ringing");
+//                        Log.i("TEST", "alarm ringing");
                     } else if (outputType.equals("headphones")) {
                         soundMusic();
-                        Log.i("TEST", "music ringing");
+//                        Log.i("TEST", "music ringing");
                     }
 
                     if (ringing == false) {
@@ -380,10 +385,11 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
                     }
                 } else {    //if user is not there yet
                     sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_NORMAL);
+                    //starts timer if there isn't one yet
                     if (mCountDownTimer == null) {
                         startTimer();
                     }
-//                    Log.i("TEST", "" + mTimeLeftInMillis);
+                    //if user hasn't moved their phones and the timer is up, vibrate
                     if (userInactive = true && mTimeLeftInMillis <= 1000) {
                         vibrate();
                     }
@@ -425,7 +431,6 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
 
     protected void onResume() {
         super.onResume();
-//        sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -438,24 +443,22 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
             double z = mGravity[2];
             mAccelLast = mAccelCurrent;
             mAccelCurrent = Math.sqrt(x * x + y * y + z * z);
-            ;
             double delta = mAccelCurrent - mAccelLast;
             mAccel = mAccel * 0.9f + delta;
-            // Make this higher or lower according to how much
-            // motion you want to detect
 
+            //alerts userInactive boolean if device is moved and timer is reset
             if (mAccel > 4.75) {
                 // do something
                 userInactive = false;
                 resetTimer();
-//                vibrate();
-//                pauseTimer();
+
             } else {
                 userInactive = true;
             }
         }
     }
 
+    //countdowntimer, creates a new timer everytime device is shaken
     private void startTimer() {
         mCountDownTimer = new CountDownTimer(mTimeLeftInMillis, 1000) {
             @Override
@@ -475,7 +478,6 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
 
     private void pauseTimer() {
         mCountDownTimer.cancel();
-        Log.i("TEST", "destroy timer");
         mTimerRunning = false;
     }
 
@@ -488,6 +490,7 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
         startTimer();
     }
 
+    //updates the textview for the timer
     private void updateCountDownText() {
         int minutes = (int) (mTimeLeftInMillis / 1000) / 60;
         int seconds = (int) (mTimeLeftInMillis / 1000) % 60;

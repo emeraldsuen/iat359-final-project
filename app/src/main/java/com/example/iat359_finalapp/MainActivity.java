@@ -19,11 +19,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-
     Button startButton, historyButton, settingsButton;
-
     LocationManager locationManager;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,18 +29,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.i("TEST", "MainActivity");
 
         //start buton initalize
-        startButton = (Button)findViewById(R.id.start_button);
+        startButton = (Button) findViewById(R.id.start_button);
         startButton.setOnClickListener(this);
 
         //history button initialize
-        historyButton = (Button)findViewById(R.id.history_button);
+        historyButton = (Button) findViewById(R.id.history_button);
         historyButton.setOnClickListener(this);
 
         //settings button initialize
-        settingsButton = (Button)findViewById(R.id.settings_button);
+        settingsButton = (Button) findViewById(R.id.settings_button);
         settingsButton.setOnClickListener(this);
 
-//getting current location
+        //getting current location
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         //check if gps is enabled
         gpsStatus();
@@ -54,15 +51,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         //if start button is pressed
-        if(v.getId() == R.id.start_button){
+        if (v.getId() == R.id.start_button) {
             Intent i = new Intent(MainActivity.this, MapsActivity.class);
             startActivity(i);
         }
-        if(v.getId() == R.id.history_button){
+        if (v.getId() == R.id.history_button) {
             Intent i = new Intent(MainActivity.this, HistoryActivity.class);
             startActivity(i);
         }
-        if(v.getId() == R.id.settings_button){
+        if (v.getId() == R.id.settings_button) {
             Intent i = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(i);
         }

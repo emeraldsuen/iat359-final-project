@@ -38,7 +38,6 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
     Boolean vibrate;
 
     boolean inTransit = false;
-
     Button startButton;
 
     MyDatabase db;
@@ -49,9 +48,7 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
     String outputType;
     int progressChangedValue = 0;
     int volChangedValue;
-
     String s;
-
     double dest_lat, dest_long;
 
 
