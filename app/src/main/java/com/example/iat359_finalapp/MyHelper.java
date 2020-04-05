@@ -26,7 +26,9 @@ public class MyHelper extends SQLiteOpenHelper {
                     Constants.DISTANCE + " TEXT, " +
                     Constants.OUTPUT + " TEXT, " +
                     Constants.VOLUME + " TEXT, " +
-                    Constants.VIBRATE + " TEXT);";
+                    Constants.VIBRATE + " TEXT, " +
+                    Constants.LAT + " TEXT, " +
+                    Constants.LON + " TEXT);";
 
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS " + Constants.TABLE_NAME;
 

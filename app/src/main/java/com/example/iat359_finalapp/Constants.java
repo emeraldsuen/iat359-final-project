@@ -10,6 +10,8 @@ public class Constants {
     public static final String OUTPUT = "Output";
     public static final String VOLUME = "Volume";
     public static final String VIBRATE = "Vibrate";
-    public static final int DATABASE_VERSION = 4;
+    public static final String LAT = "Lat";
+    public static final String LON = "Lon";
+    public static final int DATABASE_VERSION = 5;
 
 }

@@ -57,9 +57,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         public TextView outputTextView;
         public TextView volumeTextView;
         public TextView vibrateTextView;
+        public TextView latTextView, lonTextView;
         public LinearLayout myLayout;
 
-        private String name, type, dist, output, vol, vibrate;
+        private String name, type, dist, output, vol, vibrate, lat, lon;
 
         Context context;
 
@@ -73,7 +74,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             outputTextView = (TextView) itemView.findViewById(R.id.routeOutputEntry);
             volumeTextView = (TextView) itemView.findViewById(R.id.routeVolumeEntry);
             vibrateTextView = (TextView) itemView.findViewById(R.id.routeVibrateEntry);
-
+            latTextView = (TextView) itemView.findViewById(R.id.routeLatEntry);
+            lonTextView = (TextView) itemView.findViewById(R.id.routeLonEntry);
 
 
             itemView.setOnClickListener(this);
@@ -95,6 +97,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             output = (String) outputTextView.getText();
             vol = (String) volumeTextView.getText();
             vibrate = (String) vibrateTextView.getText();
+            lat = (String) latTextView.getText();
+            lon = (String) lonTextView.getText();
 
             //attach extras
             i.putExtra("name", name);
@@ -103,6 +107,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             i.putExtra("output", output);
             i.putExtra("vol", vol);
             i.putExtra("vibrate", vibrate);
+            i.putExtra("lat", lat);
+            i.putExtra("lon", lon);
 
             context.startActivity(i);
 
