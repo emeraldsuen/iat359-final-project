@@ -41,6 +41,8 @@ public class HistoryActivity extends AppCompatActivity implements AdapterView.On
         int index4 = cursor.getColumnIndex(Constants.OUTPUT);
         int index5 = cursor.getColumnIndex(Constants.VOLUME);
         int index6 = cursor.getColumnIndex(Constants.VIBRATE);
+        int index7 = cursor.getColumnIndex(Constants.LAT);
+        int index8 = cursor.getColumnIndex(Constants.LON);
 
         ArrayList<String> mArrayList = new ArrayList<String>();
         cursor.moveToFirst();
@@ -51,7 +53,9 @@ public class HistoryActivity extends AppCompatActivity implements AdapterView.On
             String routeOutput = cursor.getString(index4);
             String routeVolume = cursor.getString(index5);
             String routeVibrate = cursor.getString(index6);
-            String s = routeName + "," + routeType + "," + routeDist + "," + routeOutput + "," + routeVolume + "," + routeVibrate;
+            String routeLat = cursor.getString(index7);
+            String routeLon = cursor.getString(index8);
+            String s = routeName + "," + routeType + "," + routeDist + "," + routeOutput + "," + routeVolume + "," + routeVibrate + "," + routeLat + "," + routeLon;
             mArrayList.add(s);
             cursor.moveToNext();
         }
@@ -69,8 +73,9 @@ public class HistoryActivity extends AppCompatActivity implements AdapterView.On
         TextView routeOutputTextView = (TextView) view.findViewById(R.id.routeOutputEntry);
         TextView routeVolumeTextView = (TextView) view.findViewById(R.id.routeVolumeEntry);
         TextView routeVibrateTextView = (TextView) view.findViewById(R.id.routeVibrateEntry);
+        TextView routeLatTextView = (TextView) view.findViewById(R.id.routeLatEntry);
+        TextView routeLonTextView = (TextView) view.findViewById(R.id.routeLonEntry);
 
-
-        Toast.makeText(this, "row " + (1 + position) + ":  " + routeNameTextView.getText() + " " + routeTypeTextView.getText() + " " + routeDistTextView.getText() + " " + routeOutputTextView.getText() + " " + routeVolumeTextView.getText() + " " + routeVibrateTextView.getText(), Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "row " + (1 + position) + ":  " + routeNameTextView.getText() + " " + routeTypeTextView.getText() + " " + routeDistTextView.getText() + " " + routeOutputTextView.getText() + " " + routeVolumeTextView.getText() + " " + routeVibrateTextView.getText() + " " + routeLatTextView.getText() + " " + routeLonTextView.getText(), Toast.LENGTH_LONG).show();
     }
 }

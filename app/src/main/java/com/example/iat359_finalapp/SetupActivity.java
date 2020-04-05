@@ -128,9 +128,6 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
         startButton.setOnClickListener(this);
 
 
-
-
-
         Intent i3 = getIntent();
         Bundle extras = i3.getExtras();
         if (extras == null) {
@@ -150,7 +147,7 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
 //            dest_long = Double.parseDouble(dbLon);
 
 
-            Toast.makeText(this, dest_name + ", " + type + ", " + dbDistance + ", " + dbOutput + ", " + dbVolume + ", " + dbVibrate, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, dest_name + ", " + type + ", " + dbDistance + ", " + dbOutput + ", " + dbVolume + ", " + dbVibrate  + ", " + dbLat + ", " + dbLon, Toast.LENGTH_LONG).show();
 //            destinationNameTextView.setText(dest_name);
 //            distFromDestTextView.setText(dbDistance);
 ////            Toast.makeText(this, dbDistance, Toast.LENGTH_SHORT).show();
@@ -173,6 +170,8 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
 //            }
 
         }
+
+
     }
 
     @Override
@@ -204,6 +203,7 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
                 dbOutput = null;
             }
 
+            Log.i(TAG, dest_lat + ", " + dest_long);
 
 
             //insert data into SQLite db
