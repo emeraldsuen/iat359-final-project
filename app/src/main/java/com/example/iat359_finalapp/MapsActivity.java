@@ -171,6 +171,8 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
 
         }
 
+
+
         //button states in mapactivity
         if (inTransit == false) {
             getDirButton = (Button) findViewById(R.id.getDirection_button);

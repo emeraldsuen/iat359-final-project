@@ -50,6 +50,9 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
     int volChangedValue;
     String s;
     double dest_lat, dest_long;
+    String type;
+
+    String dbName, dbType, dbDistance, dbOutput, dbVolume, dbVibrate;
 
 
     @Override
@@ -125,6 +128,42 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
             }
         });
 
+        Intent i3 = getIntent();
+        Bundle extras = i3.getExtras();
+        if (extras == null) {
+
+        } else {
+            dbName = i3.getStringExtra("name");
+            type = i3.getStringExtra("type");
+            dbDistance = i3.getStringExtra("dist");
+            dbOutput = i3.getStringExtra("output");
+            dbVolume = i3.getStringExtra("vol");
+            dbVibrate = i3.getStringExtra("vibrate");
+
+            destinationNameTextView.setText(dbName);
+            distFromDestTextView.setText(dbDistance);
+//            distSeekBar.setProgress(Integer.parseInt(dbDistance));
+            if (dbOutput == "headphones") {
+                headphones.setChecked(true);
+                alarm.setChecked(false);
+            } else {
+                headphones.setChecked(false);
+                alarm.setChecked(true);
+            }
+            toneName.setText(dbVolume);
+//            int volParse = Integer.parseInt(dbVolume);
+//            Toast.makeText(this, volParse, Toast.LENGTH_SHORT).show();
+//            volSeekBar.setProgress(Integer.parseInt(dbVolume));
+            if (dbVibrate == "true") {
+                vibration.setChecked(true);
+                Toast.makeText(this, "success changed true", Toast.LENGTH_SHORT).show();
+            } else {
+                vibration.setChecked(false);
+            }
+
+        }
+
+
 
     }
 
@@ -132,27 +171,35 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         //starting trip
         if (v.getId() == R.id.startTrip_Button) {
+
+            String name = dest_name;
+            dbType = "transit";
+            dbDistance = progressChangedValue + "km";
+            dbVolume = "" + volChangedValue;
+
             if (vibration.isChecked()) {
                 vibrate = true;
+                dbVibrate = "true";
             } else {
                 vibrate = false;
+                dbVibrate = "false";
             }
 
             if (alarm.isChecked()) {
                 outputType = "alarm";
+                dbOutput = "alarm";
             } else if (headphones.isChecked()) {
                 outputType = "headphones";
+                dbOutput = "headphones";
             } else {
                 Toast.makeText(this, "Please select a output source.", Toast.LENGTH_SHORT).show();
+                dbOutput = null;
             }
 
-            String name = dest_name;
-            String type = "transit";
-            String distance = progressChangedValue + "km";
-            String volume = "" + volChangedValue;
+
 
             //insert data into SQLite db
-            long id = db.insertData(name, type, distance, volume);
+            long id = db.insertData(name, dbType, dbDistance, dbOutput, dbVolume, dbVibrate);
             if (id < 0) {
                 Toast.makeText(this, "fail", Toast.LENGTH_SHORT).show();
             } else {
@@ -169,7 +216,7 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
             i.putExtra("InTransit", inTransit);
             i.putExtra("Dest_lat", dest_lat);
             i.putExtra("Dest_long", dest_long);
-            i.putExtra("Dest_name", name);
+            i.putExtra("Dest_name", dbName);
             i.putExtra("Dest_dist", sigh);
             i.putExtra("OUTPUT", outputType);
             i.putExtra("VOL", volChangedValue);

@@ -28,7 +28,21 @@
         android:text="New Text" />
 
     <TextView
-        android:id="@+id/routeRingtoneEntry"
+        android:id="@+id/routeOutputEntry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/routeVolumeEntry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/routeVibrateEntry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
