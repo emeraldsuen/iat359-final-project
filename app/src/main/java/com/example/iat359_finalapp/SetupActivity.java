@@ -140,31 +140,28 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
             dbVolume = i3.getStringExtra("vol");
             dbVibrate = i3.getStringExtra("vibrate");
 
-            destinationNameTextView.setText(dbName);
-            distFromDestTextView.setText(dbDistance);
-//            distSeekBar.setProgress(Integer.parseInt(dbDistance));
-            if (dbOutput == "headphones") {
-                headphones.setChecked(true);
-                alarm.setChecked(false);
-            } else {
-                headphones.setChecked(false);
-                alarm.setChecked(true);
-            }
-            toneName.setText(dbVolume);
-//            int volParse = Integer.parseInt(dbVolume);
-//            Toast.makeText(this, volParse, Toast.LENGTH_SHORT).show();
-//            volSeekBar.setProgress(Integer.parseInt(dbVolume));
-            if (dbVibrate == "true") {
-                vibration.setChecked(true);
-                Toast.makeText(this, "success changed true", Toast.LENGTH_SHORT).show();
-            } else {
-                vibration.setChecked(false);
-            }
+//            destinationNameTextView.setText(dbName);
+//            distFromDestTextView.setText(dbDistance);
+////            Toast.makeText(this, dbDistance, Toast.LENGTH_SHORT).show();
+////            distSeekBar.setProgress(Integer.parseInt(dbDistance));
+//            if (dbOutput == "headphones") {
+//                headphones.setChecked(true);
+//                alarm.setChecked(false);
+//            } else {
+//                headphones.setChecked(false);
+//                alarm.setChecked(true);
+//            }
+//            toneName.setText(dbVolume);
+////            int volParse = Integer.parseInt(dbVolume);
+////            Toast.makeText(this, volParse, Toast.LENGTH_SHORT).show();
+////            volSeekBar.setProgress(Integer.parseInt(dbVolume));
+//            if (dbVibrate == "true") {
+//                vibration.setChecked(true);
+//            } else {
+//                vibration.setChecked(false);
+//            }
 
         }
-
-
-
     }
 
     @Override
