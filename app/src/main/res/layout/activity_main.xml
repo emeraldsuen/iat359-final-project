@@ -11,17 +11,14 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
-            android:layout_width="421dp"
-            android:layout_height="33dp"
-            android:gravity="center"
-            android:text="Hello World!" />
-
         <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="match_parent"
-            android:layout_height="378dp"
-            tools:srcCompat="@tools:sample/avatars[2]" />
+            android:id="@+id/logo"
+            android:layout_width="350dp"
+            android:layout_height="350dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="35dp"
+            android:layout_marginBottom="50dp"
+            android:src="@drawable/transitsnoozelogo" />
 
         <Button
             android:id="@+id/start_button"
@@ -29,6 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="50dp"
             android:layout_marginRight="50dp"
+            android:fontFamily="@font/montserrat"
             android:text="Start" />
 
         <Button
@@ -37,6 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="50dp"
             android:layout_marginRight="50dp"
+            android:fontFamily="@font/montserrat"
             android:text="History" />
 
         <Button
@@ -45,6 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="50dp"
             android:layout_marginRight="50dp"
+            android:fontFamily="@font/montserrat"
             android:text="Settings" />
     </LinearLayout>
 

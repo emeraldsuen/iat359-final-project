@@ -18,12 +18,14 @@
             <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="25dp">
+                android:layout_margin="25dp"
+                android:background="#00FFFFFF">
 
                 <TextView
                     android:id="@+id/location_TextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
                     android:text="Location" />
 
                 <TextView
@@ -32,6 +34,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
+                    android:fontFamily="@font/montserrat"
                     android:inputType="textPersonName" />
 
             </TableRow>
@@ -45,12 +48,14 @@
                     android:id="@+id/distance_TextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
                     android:text="Distance" />
 
                 <TextView
                     android:id="@+id/distanceNum_TextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
                     android:text="TextView" />
             </TableRow>
 
@@ -77,6 +82,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:fontFamily="@font/montserrat"
                     android:text="Alarm Output" />
 
                 <RadioGroup
@@ -88,12 +94,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:checked="true"
+                        android:fontFamily="@font/montserrat"
                         android:text="Headphones" />
 
                     <RadioButton
                         android:id="@+id/alarm_Radio"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/montserrat"
                         android:text="Alarm" />
 
                 </RadioGroup>
@@ -108,13 +116,15 @@
                     android:id="@+id/ringtone_TextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
                     android:text="Volume" />
 
                 <TextView
                     android:id="@+id/audio_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:fontFamily="@font/montserrat" />
 
             </TableRow>
 
@@ -142,6 +152,7 @@
                     android:layout_margin="25dp"
                     android:layout_weight="1"
                     android:checked="true"
+                    android:fontFamily="@font/montserrat"
                     android:text="Vibrate" />
             </TableRow>
 
@@ -156,6 +167,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:fontFamily="@font/montserrat"
                     android:gravity="center"
                     android:text="Start Trip" />
             </TableRow>

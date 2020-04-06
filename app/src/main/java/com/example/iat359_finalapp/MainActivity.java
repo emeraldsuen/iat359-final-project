@@ -16,6 +16,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -25,6 +26,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     Button startButton, historyButton, settingsButton;
+    ImageView logo;
     LocationManager locationManager;
 
     @Override
@@ -32,6 +34,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.i("TEST", "MainActivity");
+
+        //logo image initialize
+        logo = (ImageView) findViewById(R.id.logo);
 
         //start buton initalize
         startButton = (Button) findViewById(R.id.start_button);
