@@ -52,7 +52,7 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
     double dest_lat, dest_long;
     String type;
 
-    String dbName, dbType, dbDistance, dbOutput, dbVolume, dbVibrate;
+    String dbName, dbType, dbDistance, dbOutput, dbVolume, dbVibrate, dbLat, dbLon;
 
 
     @Override
@@ -67,80 +67,45 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
 
         destinationNameTextView = (TextView) findViewById(R.id.locationText);
         dest_name = i.getStringExtra("DESTINATION_STRING");
-        destinationNameTextView.setText(dest_name);
 
         distFromDestTextView = (TextView) findViewById(R.id.distanceNum_TextView);
         dist_km = (int) i.getDoubleExtra("DESTINATION_DISTANCE", 0.0);
-//        distFromDestTextView.setText("Distance: " + dist_km);
-        distFromDestTextView.setText("");
-
 
         distSeekBar = (SeekBar) findViewById(R.id.distance_seek);
-//        distSeekBar.setMax(dist_km);
-        distSeekBar.setMax(3);
-        distSeekBar.setProgress(dist_km / 2);
 
         volSeekBar = (SeekBar) findViewById(R.id.volSeekBar);
-        volSeekBar.setMax(100);
-        volSeekBar.setProgress(50);
 
         vibration = (Switch) findViewById(R.id.vibrate);
-        vibration.setChecked(true);
 
         alarm = (RadioButton) findViewById(R.id.alarm_Radio);
         headphones = (RadioButton) findViewById(R.id.headphones_Radio);
 
         toneName = (TextView) findViewById(R.id.audio_name);
 
-        //database
-        db = new MyDatabase(this);
+        setupForm();
 
-        //start button
-        startButton = (Button) findViewById(R.id.startTrip_Button);
-        startButton.setOnClickListener(this);
-
-        //SeekBarListener for distance
-        distSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                progressChangedValue = progress;
-            }
-
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                distFromDestTextView.setText("" + progressChangedValue);
-            }
-        });
-
-        //seekbar for volume
-        volSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                volChangedValue = progress;
-            }
-
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                toneName.setText("" + volChangedValue);
-            }
-        });
 
         Intent i3 = getIntent();
         Bundle extras = i3.getExtras();
         if (extras == null) {
-
+            destinationNameTextView.setText(dest_name);
         } else {
+            Toast.makeText(this, "SUCCESS!!!", Toast.LENGTH_SHORT).show();
             dbName = i3.getStringExtra("name");
             type = i3.getStringExtra("type");
             dbDistance = i3.getStringExtra("dist");
             dbOutput = i3.getStringExtra("output");
             dbVolume = i3.getStringExtra("vol");
             dbVibrate = i3.getStringExtra("vibrate");
+            dbLat = i3.getStringExtra("lat");
+            dbLon = i3.getStringExtra("lon");
 
-            destinationNameTextView.setText(dbName);
+            if (dbLat != null && dbLon != null) {
+                dest_lat = Double.parseDouble(dbLat);
+                dest_long = Double.parseDouble(dbLon);
+            }
+
+            destinationNameTextView.setText(dest_name);
             distFromDestTextView.setText(dbDistance);
 //            distSeekBar.setProgress(Integer.parseInt(dbDistance));
             if (dbOutput == "headphones") {
@@ -164,6 +129,56 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
         }
 
 
+    }
+
+    public void setupForm() {
+        //database
+        db = new MyDatabase(this);
+
+        //destination name
+        destinationNameTextView.setText(dest_name);
+
+        //distance textview and seekbar
+        distFromDestTextView.setText("");
+        distSeekBar.setMax(3);
+        distSeekBar.setProgress(dist_km / 2);
+
+        //SeekBarListener for distance
+        distSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                progressChangedValue = progress;
+            }
+
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                distFromDestTextView.setText("" + progressChangedValue);
+            }
+        });
+
+        volSeekBar.setMax(100);
+        volSeekBar.setProgress(50);
+        //seekbar for volume
+        volSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                volChangedValue = progress;
+            }
+
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                toneName.setText("" + volChangedValue);
+            }
+        });
+
+        vibration.setChecked(true);
+
+        //start button
+        startButton = (Button) findViewById(R.id.startTrip_Button);
+        startButton.setOnClickListener(this);
 
     }
 
@@ -196,18 +211,23 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
                 dbOutput = null;
             }
 
-
+            String latString = Double.toString(dest_lat);
+            String lonString = Double.toString(dest_long);
+            Log.i(TAG, latString + ", " + lonString);
 
             //insert data into SQLite db
-            long id = db.insertData(name, dbType, dbDistance, dbOutput, dbVolume, dbVibrate);
-            if (id < 0) {
-                Toast.makeText(this, "fail", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "success", Toast.LENGTH_SHORT).show();
+            if (name != null) {
+                long id = db.insertData(name, dbType, dbDistance, dbOutput, dbVolume, dbVibrate, latString, lonString);
+                if (id < 0) {
+                    Toast.makeText(this, "fail", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "success", Toast.LENGTH_SHORT).show();
+                }
             }
 
             double sigh = distSeekBar.getProgress();
             inTransit = true;
+
 
             //directs to mapsactivity with trip started
             Intent i = new Intent(SetupActivity.this, MapsActivity.class);
