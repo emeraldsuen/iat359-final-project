@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -51,11 +52,17 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
     String s;
     double dest_lat, dest_long;
 
+    SharedPreferences.Editor editor;
+    int totalDistanceTraveled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup);
+
+        SharedPreferences sharedPrefs = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+        editor = sharedPrefs.edit();
+        totalDistanceTraveled = sharedPrefs.getInt("totalDist", 0);
 
         Intent i = getIntent();
 
@@ -70,7 +77,9 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
         dist_km = (int) i.getDoubleExtra("DESTINATION_DISTANCE", 0.0);
 //        distFromDestTextView.setText("Distance: " + dist_km);
         distFromDestTextView.setText("");
-
+        totalDistanceTraveled = dist_km + totalDistanceTraveled;
+        editor.putInt("totalDist", totalDistanceTraveled);
+        editor.commit();
 
         distSeekBar = (SeekBar) findViewById(R.id.distance_seek);
 //        distSeekBar.setMax(dist_km);

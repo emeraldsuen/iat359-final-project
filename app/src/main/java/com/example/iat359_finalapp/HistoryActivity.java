@@ -21,6 +21,7 @@ public class HistoryActivity extends AppCompatActivity implements AdapterView.On
     MyAdapter myAdapter;
     MyHelper myHelper;
     private RecyclerView.LayoutManager myLayoutManager;
+    double totalDistanceTraveled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

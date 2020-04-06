@@ -1,5 +1,5 @@
 package com.example.iat359_finalapp;
-
+import android.Manifest;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -15,11 +15,13 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -55,6 +57,7 @@ import java.security.acl.Permission;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Map;
 
 import static java.lang.String.valueOf;
 
@@ -108,6 +111,10 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
     private static final long START_TIME_IN_MILLIS = 60000;
     private long mTimeLeftInMillis = START_TIME_IN_MILLIS;
 
+    //permission
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+//    String provider = locationManager.getBestProvider(new Criteria(), true);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -137,18 +144,18 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
             // for Activity#requestPermissions for more details.
             return;
         }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, this);
 
+
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, this);
         //check if gps is enabled
         gpsStatus();
-
-
         //You have to ask user for permission for location services
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            if (gMap != null) {
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            if(gMap!=null){
                 gMap.setMyLocationEnabled(true);
             }
-        } else {
+        }
+        else{
             PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE, Manifest.permission.ACCESS_FINE_LOCATION, true);
         }
 
@@ -196,6 +203,22 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
             Places.initialize(getApplicationContext(), apiKey);
         }
         PlacesClient placesClient = Places.createClient(this);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                // start to find location...
+
+            } else { // if permission is not granted
+
+                // decide what you want to do if you don't get permissions
+            }
+        }
     }
 
     @Override
