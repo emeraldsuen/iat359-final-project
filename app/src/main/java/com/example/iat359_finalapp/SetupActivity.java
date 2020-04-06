@@ -53,6 +53,7 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
     String type;
 
     String dbName, dbType, dbDistance, dbOutput, dbVolume, dbVibrate, dbLat, dbLon;
+    int distParse = 1;
 
 
     @Override
@@ -84,7 +85,7 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
 
         setupForm();
 
-
+        //get extras from database (myadapter)
         Intent i3 = getIntent();
         Bundle extras = i3.getExtras();
         if (extras == null) {
@@ -107,7 +108,11 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
 
             destinationNameTextView.setText(dest_name);
             distFromDestTextView.setText(dbDistance);
-//            distSeekBar.setProgress(Integer.parseInt(dbDistance));
+            if (dbDistance != null) {
+                Log.i(TAG, dbDistance);
+//                distParse = Integer.parseInt(dbDistance);
+            }
+            distSeekBar.setProgress(distParse);
             if (dbOutput == "headphones") {
                 headphones.setChecked(true);
                 alarm.setChecked(false);
@@ -189,7 +194,11 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
 
             String name = dest_name;
             dbType = "transit";
-            dbDistance = progressChangedValue + "km";
+            if (distFromDestTextView.getText() != null) {
+                dbDistance = distFromDestTextView.getText() + "km";
+            } else {
+                dbDistance = progressChangedValue + "km";
+            }
             dbVolume = "" + volChangedValue;
 
             if (vibration.isChecked()) {

@@ -61,6 +61,8 @@ import static java.lang.String.valueOf;
 public class MapsActivity extends FragmentActivity implements SensorEventListener, OnMapReadyCallback, TaskLoadedCallback,
         GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, PlaceSelectionListener, View.OnClickListener, LocationListener {
 
+    private static final String TAG = "TEST";
+
     //Google Maps
     private GoogleMap gMap;
     private MarkerOptions i_place;
@@ -347,8 +349,12 @@ public class MapsActivity extends FragmentActivity implements SensorEventListene
                 double ugh = CalculationByDistance(curr_lat, curr_long, p_latitude, p_longitude);
                 DistanceTo.setText(ugh + "  " + distanceBeforeAlarm);
 
+
                 //if user is close enough, sound/vibrate
                 if (ugh <= distanceBeforeAlarm) {
+
+                    Log.i(TAG, String.valueOf(distanceBeforeAlarm));
+
                     if (vibrateUser == true) {
                         vibrate();
                     }
