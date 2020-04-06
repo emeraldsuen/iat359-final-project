@@ -12,6 +12,6 @@ public class Constants {
     public static final String VIBRATE = "Vibrate";
     public static final String LAT = "Latitude";
     public static final String LON = "Longitude";
-    public static final int DATABASE_VERSION = 7;
+    public static final int DATABASE_VERSION = 10;
 
 }
