@@ -78,15 +78,13 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
 
         distFromDestTextView = (TextView) findViewById(R.id.distanceNum_TextView);
         dist_km = (int) i.getDoubleExtra("DESTINATION_DISTANCE", 0.0);
-<<<<<<<
+
 //        distFromDestTextView.setText("Distance: " + dist_km);
         distFromDestTextView.setText("");
         totalDistanceTraveled = dist_km + totalDistanceTraveled;
         editor.putInt("totalDist", totalDistanceTraveled);
         editor.commit();
-=======
 
->>>>>>>
 
         distSeekBar = (SeekBar) findViewById(R.id.distance_seek);
 
