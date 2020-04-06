@@ -91,7 +91,7 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
         if (extras == null) {
             destinationNameTextView.setText(dest_name);
         } else {
-            Toast.makeText(this, "SUCCESS!!!", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "SUCCESS!!!", Toast.LENGTH_SHORT).show();
             dbName = i3.getStringExtra("name");
             type = i3.getStringExtra("type");
             dbDistance = i3.getStringExtra("dist");
@@ -106,30 +106,36 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
                 dest_long = Double.parseDouble(dbLon);
             }
 
+            if (dbName != null) {
+                dest_name = dbName;
+            }
+
             destinationNameTextView.setText(dest_name);
-            distFromDestTextView.setText(dbDistance);
-            if (dbDistance != null) {
-                Log.i(TAG, dbDistance);
-//                distParse = Integer.parseInt(dbDistance);
-            }
-            distSeekBar.setProgress(distParse);
-            if (dbOutput == "headphones") {
-                headphones.setChecked(true);
-                alarm.setChecked(false);
-            } else {
-                headphones.setChecked(false);
-                alarm.setChecked(true);
-            }
-            toneName.setText(dbVolume);
-//            int volParse = Integer.parseInt(dbVolume);
-//            Toast.makeText(this, volParse, Toast.LENGTH_SHORT).show();
-//            volSeekBar.setProgress(Integer.parseInt(dbVolume));
-            if (dbVibrate == "true") {
-                vibration.setChecked(true);
-                Toast.makeText(this, "success changed true", Toast.LENGTH_SHORT).show();
-            } else {
-                vibration.setChecked(false);
-            }
+
+            //other database junk that wasnt' used
+//            distFromDestTextView.setText(dbDistance);
+//            if (dbDistance != null) {
+//                Log.i(TAG, dbDistance);
+////                distParse = Integer.parseInt(dbDistance);
+//            }
+//            distSeekBar.setProgress(distParse);
+//            if (dbOutput == "headphones") {
+//                headphones.setChecked(true);
+//                alarm.setChecked(false);
+//            } else {
+//                headphones.setChecked(false);
+//                alarm.setChecked(true);
+//            }
+//            toneName.setText(dbVolume);
+////            int volParse = Integer.parseInt(dbVolume);
+////            Toast.makeText(this, volParse, Toast.LENGTH_SHORT).show();
+////            volSeekBar.setProgress(Integer.parseInt(dbVolume));
+//            if (dbVibrate == "true") {
+//                vibration.setChecked(true);
+//                Toast.makeText(this, "success changed true", Toast.LENGTH_SHORT).show();
+//            } else {
+//                vibration.setChecked(false);
+//            }
 
         }
 
@@ -162,6 +168,7 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
             }
         });
 
+        //volume stuff
         volSeekBar.setMax(100);
         volSeekBar.setProgress(50);
         //seekbar for volume
@@ -194,11 +201,14 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
 
             String name = dest_name;
             dbType = "transit";
-            if (distFromDestTextView.getText() != null) {
-                dbDistance = distFromDestTextView.getText() + "km";
+            if (distFromDestTextView.getText() == null || progressChangedValue == 0) {
+                Toast.makeText(this, "Please select a distance value that is greater than 0.", Toast.LENGTH_SHORT).show();
             } else {
-                dbDistance = progressChangedValue + "km";
+
             }
+
+            dbDistance = progressChangedValue + "km";
+
             dbVolume = "" + volChangedValue;
 
             if (vibration.isChecked()) {
@@ -224,34 +234,38 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
             String lonString = Double.toString(dest_long);
             Log.i(TAG, latString + ", " + lonString);
 
-            //insert data into SQLite db
-            if (name != null) {
-                long id = db.insertData(name, dbType, dbDistance, dbOutput, dbVolume, dbVibrate, latString, lonString);
-                if (id < 0) {
-                    Toast.makeText(this, "fail", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "success", Toast.LENGTH_SHORT).show();
+            if (distFromDestTextView.getText() != null && progressChangedValue != 0 && volChangedValue != 0 && toneName.getText() != null) {
+
+                //insert data into SQLite db
+                if (name != null) {
+                    long id = db.insertData(name, dbType, dbDistance, dbOutput, dbVolume, dbVibrate, latString, lonString);
+                    if (id < 0) {
+                        Toast.makeText(this, "fail", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, "success", Toast.LENGTH_SHORT).show();
+                    }
                 }
+
+                double sigh = distSeekBar.getProgress();
+                inTransit = true;
+
+                //directs to mapsactivity with trip started
+                Intent i = new Intent(SetupActivity.this, MapsActivity.class);
+
+                //attach extras
+                i.putExtra("InTransit", inTransit);
+                i.putExtra("Dest_lat", dest_lat);
+                i.putExtra("Dest_long", dest_long);
+                i.putExtra("Dest_name", dbName);
+                i.putExtra("Dest_dist", sigh);
+                i.putExtra("OUTPUT", outputType);
+                i.putExtra("VOL", volChangedValue);
+                i.putExtra("VIBRATE", vibrate);
+
+                startActivity(i);
+            } else {
+                Toast.makeText(this, "Please select all fields.", Toast.LENGTH_SHORT).show();
             }
-
-            double sigh = distSeekBar.getProgress();
-            inTransit = true;
-
-
-            //directs to mapsactivity with trip started
-            Intent i = new Intent(SetupActivity.this, MapsActivity.class);
-
-            //attach extras
-            i.putExtra("InTransit", inTransit);
-            i.putExtra("Dest_lat", dest_lat);
-            i.putExtra("Dest_long", dest_long);
-            i.putExtra("Dest_name", dbName);
-            i.putExtra("Dest_dist", sigh);
-            i.putExtra("OUTPUT", outputType);
-            i.putExtra("VOL", volChangedValue);
-            i.putExtra("VIBRATE", vibrate);
-
-            startActivity(i);
         }
     }
 }
