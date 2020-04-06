@@ -7,7 +7,11 @@ public class Constants {
     public static final String NAME = "Name";
     public static final String TYPE = "Type";
     public static final String DISTANCE = "Distance";
-    public static final String RINGTONE = "Ringtone";
-    public static final int DATABASE_VERSION = 3;
+    public static final String OUTPUT = "Output";
+    public static final String VOLUME = "Volume";
+    public static final String VIBRATE = "Vibrate";
+    public static final String LAT = "Latitude";
+    public static final String LON = "Longitude";
+    public static final int DATABASE_VERSION = 7;
 
 }

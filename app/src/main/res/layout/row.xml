@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
+    android:id="@+id/listLayout"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/listLayout">
+    android:layout_margin="15dp"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/routeNameEntry"
@@ -17,6 +19,7 @@
         android:id="@+id/routeTypeEntry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
         android:layout_weight="1"
         android:text="TextView" />
 
@@ -24,13 +27,47 @@
         android:id="@+id/routeDistEntry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
         android:layout_weight="1"
         android:text="New Text" />
 
     <TextView
-        android:id="@+id/routeRingtoneEntry"
+        android:id="@+id/routeOutputEntry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_weight="1"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/routeVolumeEntry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_weight="1"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/routeVibrateEntry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_weight="1"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/routeLatEntry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_weight="1"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/routeLonEntry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
         android:layout_weight="1"
         android:text="TextView" />
 

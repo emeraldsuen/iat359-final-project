@@ -12,6 +12,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 
 public class HistoryActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
@@ -39,7 +41,11 @@ public class HistoryActivity extends AppCompatActivity implements AdapterView.On
         int index1 = cursor.getColumnIndex(Constants.NAME);
         int index2 = cursor.getColumnIndex(Constants.TYPE);
         int index3 = cursor.getColumnIndex(Constants.DISTANCE);
-        int index4 = cursor.getColumnIndex(Constants.RINGTONE);
+        int index4 = cursor.getColumnIndex(Constants.OUTPUT);
+        int index5 = cursor.getColumnIndex(Constants.VOLUME);
+        int index6 = cursor.getColumnIndex(Constants.VIBRATE);
+        int index7 = cursor.getColumnIndex(Constants.LAT);
+        int index8 = cursor.getColumnIndex(Constants.LON);
 
         ArrayList<String> mArrayList = new ArrayList<String>();
         cursor.moveToFirst();
@@ -47,8 +53,12 @@ public class HistoryActivity extends AppCompatActivity implements AdapterView.On
             String routeName = cursor.getString(index1);
             String routeType = cursor.getString(index2);
             String routeDist = cursor.getString(index3);
-            String routeRingtone = cursor.getString(index4);
-            String s = routeName + "," + routeType + "," + routeDist + "," + routeRingtone;
+            String routeOutput = cursor.getString(index4);
+            String routeVolume = cursor.getString(index5);
+            String routeVibrate = cursor.getString(index6);
+            String routeLat = cursor.getString(index7);
+            String routeLon = cursor.getString(index8);
+            String s = routeName + "," + routeType + "," + routeDist + "," + routeOutput + "," + routeVolume + "," + routeVibrate + "," + routeLat + "," + routeLon;
             mArrayList.add(s);
             cursor.moveToNext();
         }
@@ -63,8 +73,12 @@ public class HistoryActivity extends AppCompatActivity implements AdapterView.On
         TextView routeNameTextView = (TextView) view.findViewById(R.id.routeNameEntry);
         TextView routeTypeTextView = (TextView) view.findViewById(R.id.routeTypeEntry);
         TextView routeDistTextView = (TextView) view.findViewById(R.id.routeDistEntry);
-        TextView routeRingtoneTextView = (TextView) view.findViewById(R.id.routeRingtoneEntry);
+        TextView routeOutputTextView = (TextView) view.findViewById(R.id.routeOutputEntry);
+        TextView routeVolumeTextView = (TextView) view.findViewById(R.id.routeVolumeEntry);
+        TextView routeVibrateTextView = (TextView) view.findViewById(R.id.routeVibrateEntry);
+        TextView routeLatTextView = (TextView) view.findViewById(R.id.routeLatEntry);
+        TextView routeLonTextView = (TextView) view.findViewById(R.id.routeLatEntry);
 
-        Toast.makeText(this, "row " + (1 + position) + ":  " + routeNameTextView.getText() + " " + routeTypeTextView.getText() + " " + routeDistTextView.getText() + " " + routeRingtoneTextView.getText(), Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "row " + (1 + position) + ":  " + routeNameTextView.getText() + " " + routeTypeTextView.getText() + " " + routeDistTextView.getText() + " " + routeOutputTextView.getText() + " " + routeVolumeTextView.getText() + " " + routeVibrateTextView.getText() + " " + routeLatTextView.getText() + " " + routeLonTextView.getText(), Toast.LENGTH_LONG).show();
     }
 }
